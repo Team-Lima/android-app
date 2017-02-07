@@ -1,8 +1,12 @@
 package com.lima2017.neuralguide;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,26 +37,21 @@ public class NeuralGuideFragment extends Fragment {
     private CameraView mCameraView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        mCamera = getCameraInstance();
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container, final Bundle savedInstanceState) {
+        final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
 
-        if (mCamera == null) {
-            // TODO: Deal with camera being unavailable
-            Log.e(TAG, "Camera was unavailable");
-
-            return inflater.inflate(R.layout.fragment_neural_guide, container, false);
+        if (hasCameraPermission()) {
+            inflateCameraView(root);
+        }
+        else {
+            requestCameraPermission();
         }
 
-        // Create our CameraView and set it as the content of our activity.
-        mCameraView = new CameraView(getActivity(), mCamera);
-        FrameLayout cameraFrame = (FrameLayout) container.findViewById(R.id.fragment_neural_guide_camera_frame);
-        cameraFrame.addView(mCameraView);
-
-        return inflater.inflate(R.layout.fragment_neural_guide, container, false);
+        return root;
     }
 
-    public void onImageCaptioned(ImageCaptionResult result) {
+    public void onImageCaptioned(final ImageCaptionResult result) {
 
     }
 
@@ -62,16 +61,16 @@ public class NeuralGuideFragment extends Fragment {
      * @return A Camera object if it successfully could get hold of one, or null if not.
      */
     private static Camera getCameraInstance() {
-        Camera c = null;
+        Camera camera = null;
 
         try {
-            c = Camera.open(); // attempt to get a Camera instance
+            camera = Camera.open(); // attempt to get a Camera instance
         }
-        catch (Exception e){
-            Log.e(TAG, "Camera not found: " + e.getMessage());
+        catch (Exception exception){
+            Log.e(LOG_TAG, "Camera not found: " + exception.getMessage());
         }
 
-        return c;
+        return camera;
     }
 
     /**
@@ -84,5 +83,71 @@ public class NeuralGuideFragment extends Fragment {
         }
     }
 
-    private static final String TAG = "NeuralGuideFragment";
+    /**
+     * @return <code>true</code> if and only if the user has granted permission for this app to
+     * use the camera.
+     */
+    private boolean hasCameraPermission() {
+        return PackageManager.PERMISSION_GRANTED ==
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
+    }
+
+    /**
+     * Requests permission to use the Camera from the user, displaying a rationale if the user
+     * has declined permission in the past.
+     */
+    private void requestCameraPermission() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            // TODO Explain to the user why we need the camera
+        }
+        else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_CODE_REQUEST_CAMERA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           final String permissions[], final int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_CODE_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    inflateCameraView(getActivity().findViewById(R.id.activity_neural_guide_root));
+                }
+                else {
+                    // TODO: Handle permissions denied
+                }
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * Instantiates the <code>CameraView</code> used to display what the back camera sees to the user.
+     * @param root The root view of this fragment.
+     */
+    private void inflateCameraView(final View root) {
+        if (mCamera == null) {
+            mCamera = getCameraInstance();
+        }
+
+        if (mCamera == null) {
+            // TODO: Deal with camera being unavailable
+            Log.e(LOG_TAG, "Camera was unavailable");
+        }
+        else {
+            mCameraView = new CameraView(getActivity(), mCamera);
+            FrameLayout cameraFrame = (FrameLayout) root.findViewById(R.id.fragment_neural_guide_camera_frame);
+            cameraFrame.addView(mCameraView);
+        }
+    }
+
+    /** The error log tag used for this class */
+    private static final String LOG_TAG = "NeuralGuideFragment";
+
+    /** The code representing this fragment's request to use the Camera */
+    private static final int PERMISSION_CODE_REQUEST_CAMERA = 1;
 }
