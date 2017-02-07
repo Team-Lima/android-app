@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.lima2017.neuralguide;
+package com.lima2017.neuralguide;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
