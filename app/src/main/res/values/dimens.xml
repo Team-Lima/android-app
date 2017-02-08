@@ -4,5 +4,5 @@
     <dimen name="neural_guide_result_panel_padding">16dp</dimen>
     <dimen name="neural_guide_prompt_height">48dp</dimen>
     <dimen name="neural_guide_prompt_margin">16dp</dimen>
-    <dimen name="neural_guide_prompt_padding">4dp</dimen>
+    <dimen name="neural_guide_prompt_padding">8dp</dimen>
 </resources>

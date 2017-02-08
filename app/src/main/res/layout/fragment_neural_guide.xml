@@ -13,7 +13,7 @@
         android:textColor="#33b5e5"
         android:textStyle="bold"
         android:textSize="50sp"
-        android:gravity="center" >
+        android:gravity="center">
     </FrameLayout>
 
     <TextView
@@ -24,7 +24,9 @@
         android:layout_margin="@dimen/neural_guide_prompt_margin"
         android:textAppearance="@style/neural_guide_prompt_text_style"
         android:gravity="center_vertical"
-        android:padding="@dimen/neural_guide_prompt_padding"/>
+        android:padding="@dimen/neural_guide_prompt_padding"
+        android:elevation="16dp"
+        android:background="#FFFFFF"/>
 
     <TextView
         android:id="@+id/fragment_neural_guide_feedback_text"
@@ -35,6 +37,8 @@
         android:layout_height="@dimen/neural_guide_result_panel_height"
         android:padding="@dimen/neural_guide_result_panel_padding"
         android:textAppearance="@style/neural_guide_result_text_style"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:elevation="24dp"
+        android:background="#FFFFFF" />
 
 </RelativeLayout>

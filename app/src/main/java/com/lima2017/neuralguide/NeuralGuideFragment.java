@@ -12,8 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.lima2017.neuralguide.api.ImageCaptionResult;
+
+import java.net.HttpURLConnection;
 
 /**
  * This fragment represents the main user interface components for the Neural Guide application.
@@ -36,6 +39,8 @@ public class NeuralGuideFragment extends Fragment {
      */
     private CameraView mCameraView;
 
+    private TextView mNeuralGuideResultView;
+
     @Override
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container, final Bundle savedInstanceState) {
@@ -52,7 +57,12 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     public void onImageCaptioned(final ImageCaptionResult result) {
-
+        if (result.success()) {
+            mNeuralGuideResultView.setText(result.getCaption());
+        }
+        else {
+            // TODO: Handle error cases
+        }
     }
 
     /**
