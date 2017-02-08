@@ -3,6 +3,9 @@ package com.lima2017.neuralguide;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.demo.NeuralGuideApiDemoMock;
@@ -47,6 +50,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        hideStatusBar();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
     }
@@ -57,5 +61,15 @@ public class NeuralGuideActivity extends AppCompatActivity {
      */
     public void captionImage(final Image image) {
         _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
+    }
+
+    /**
+     * Hides the ActionBar and Status Bars from the UI.
+     */
+    private void hideStatusBar() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }

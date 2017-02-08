@@ -1,6 +1,7 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
