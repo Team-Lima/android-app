@@ -64,7 +64,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
     }
 
     /**
-     * Hides the ActionBar and Status Bars from the UI.
+     * Hides the Status Bars from the UI.
      */
     private void hideStatusBar() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
