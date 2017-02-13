@@ -3,13 +3,11 @@ package com.lima2017.neuralguide;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.demo.NeuralGuideApiDemoMock;
-import com.lima2017.neuralguide.api.web.NeuralGuideApi;
 
 /**
  * Represents the main activity that the user interacts with. This should act as a Controller of
@@ -28,14 +26,10 @@ public class NeuralGuideActivity extends AppCompatActivity {
      */
     private final INeuralGuideApi _api;
 
-    /**
-     * The <code>Fragment</code> representing the UI for the Neural Guide activity.
-     */
+    /** The <code>Fragment</code> representing the UI for the Neural Guide activity. */
     private NeuralGuideFragment mFragment;
 
-    /**
-     * Temporary constructor - we want to use a DI framework but this will do for now
-     */
+    /** Temporary constructor - we want to use a DI framework but this will do for now. */
     public NeuralGuideActivity() {
         this(new NeuralGuideApiDemoMock());
     }
@@ -53,6 +47,8 @@ public class NeuralGuideActivity extends AppCompatActivity {
         hideStatusBar();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
+
+        mFragment =  (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
     }
 
     /**
@@ -63,9 +59,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
         _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
     }
 
-    /**
-     * Hides the Status Bars from the UI.
-     */
+    /** Hides the Status Bars from the UI. */
     private void hideStatusBar() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(

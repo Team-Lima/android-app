@@ -10,9 +10,9 @@
 
 
     <fragment
+        android:id="@+id/activity_neural_guide_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.lima2017.neuralguide.NeuralGuideFragment"
-        android:id="@+id/fragment"
         tools:layout="@layout/fragment_neural_guide" />
 </FrameLayout>
