@@ -1,6 +1,5 @@
 package com.lima2017.neuralguide;
 
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
@@ -55,7 +54,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
      * Uses the Neural Guide API to try to caption the image provided.
      * @param image The Image to be captioned.
      */
-    public void captionImage(final Image image) {
+    public void captionImage(final byte[] image) {
         _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
     }
 

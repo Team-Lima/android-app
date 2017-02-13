@@ -22,7 +22,7 @@ public class NeuralGuideApi implements INeuralGuideApi {
     }
 
     @Override
-    public void tryCaptionImage(final Image image, final OnImageCaptionedListener callback) {
-        _task.execute(image);
+    public void tryCaptionImage(final byte[] imageData, final OnImageCaptionedListener callback) {
+        _task.execute(imageData);
     }
 }

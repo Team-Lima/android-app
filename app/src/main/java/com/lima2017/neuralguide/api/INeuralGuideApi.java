@@ -16,9 +16,9 @@ public interface INeuralGuideApi {
      * Attempts to caption the image, and returns the result via a callback. The request may be
      * made asynchronously. The callback will receive a DTO which indicates the status of the
      * result - whether it succeeds or fails, and any associated data.
-     * @param image The <code>Image</code> that we wish to caption.
-     * @param callback The callback that should be invoked when the attempt to caption the image
-     *                 is completed.
+     * @param imageData The bytes representing the JPEG image that we wish to caption.
+     * @param callback  The callback that should be invoked when the attempt to caption the image
+     *                  is completed.
      */
-    void tryCaptionImage(final Image image, final OnImageCaptionedListener callback);
+    void tryCaptionImage(final byte[] imageData, final OnImageCaptionedListener callback);
 }

@@ -16,7 +16,7 @@ import com.lima2017.neuralguide.api.ImageCaptionResult;
  */
 public class NeuralGuideApiDemoMock implements INeuralGuideApi {
     @Override
-    public void tryCaptionImage(Image image, OnImageCaptionedListener callback) {
+    public void tryCaptionImage(byte[] imageData, OnImageCaptionedListener callback) {
         callback.onImageCaptioned(new ImageCaptionResult(HttpURLConnection.HTTP_OK, "I think this is a picture of a flower"));
     }
 }

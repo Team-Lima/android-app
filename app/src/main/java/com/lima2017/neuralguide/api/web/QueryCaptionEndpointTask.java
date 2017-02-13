@@ -9,7 +9,7 @@ import com.lima2017.neuralguide.api.ImageCaptionResult;
 /**
  * This asynchronous task queries the API endpoint.
  */
-public class QueryCaptionEndpointTask extends AsyncTask<Image, Integer, ImageCaptionResult> {
+public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCaptionResult> {
     private final OnImageCaptionedListener _listener;
     private final WebApiConfig _config;
 
@@ -19,7 +19,7 @@ public class QueryCaptionEndpointTask extends AsyncTask<Image, Integer, ImageCap
     }
 
     @Override
-    protected ImageCaptionResult doInBackground(final Image... params) {
+    protected ImageCaptionResult doInBackground(final byte[]... params) {
         return null;
     }
 
