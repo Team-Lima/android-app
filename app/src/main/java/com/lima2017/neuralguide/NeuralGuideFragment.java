@@ -1,10 +1,12 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -16,8 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.lima2017.neuralguide.api.ImageCaptionResult;
-
-import java.net.HttpURLConnection;
 
 /**
  * This fragment represents the main user interface components for the Neural Guide application.
@@ -40,12 +40,38 @@ public class NeuralGuideFragment extends Fragment {
      */
     private CameraView mCameraView;
 
-    private TextView mNeuralGuideResultView;
+    /** TextView holding the result of captioning. */
+    private TextView mCaptionTextView;
+
+    /** TextView holding the 'Tap or say "What is this?"' prompt. */
+    private TextView mPromptTextView;
+
+    /** The Activity holding this fragment must be the NeuralGuideActivity. */
+    private NeuralGuideActivity mNeuralGuideActivity;
+
+    /** An instance of the Android TextToSpeech service. */
+    private TextToSpeech mTextToSpeech;
 
     @Override
-    public View onCreateView(final LayoutInflater inflater,
-                             final ViewGroup container, final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (!(getActivity() instanceof NeuralGuideActivity)) {
+            // If we reach here we are about to hit a cast exception.
+            Log.e(LOG_TAG, "The parent activity must be a NeuralGuideActivity but is not!");
+        }
+
+        mNeuralGuideActivity = (NeuralGuideActivity) getActivity();
+        initialiseTextToSpeech();
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
+
+        setUpPromptTextView(root);
+        setUpCaptionTextView(root);
 
         if (hasCameraPermission()) {
             inflateCameraView(root);
@@ -57,9 +83,56 @@ public class NeuralGuideFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initialiseCamera();
+    }
+
+    @Override
+    public void onPause() {
+        releaseCamera();
+        super.onPause();
+    }
+
+    private void setUpPromptTextView(final View root) {
+        mPromptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
+
+        mPromptTextView.setOnClickListener(view -> {
+            final Image image = mCameraView.getImage();
+            mNeuralGuideActivity.captionImage(image);
+        });
+    }
+
+    private void setUpCaptionTextView(final View root) {
+        mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
+
+        mCaptionTextView.setOnClickListener(view -> {
+            final CharSequence text = mCaptionTextView.getText();
+            speak(text);
+        });
+    }
+
+    private void speak(final CharSequence text) {
+        if (mTextToSpeech == null) {
+            // TODO: Deal with this.
+            Log.e(LOG_TAG, "Called 'speak' but no text to speech instance exists.");
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+        else {
+            mTextToSpeech.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
     public void onImageCaptioned(final ImageCaptionResult result) {
         if (result.success()) {
-            mNeuralGuideResultView.setText(result.getCaption());
+            final String text = result.getCaption();
+            mCaptionTextView.setText(text);
+            speak(text);
         }
         else {
             // TODO: Handle error cases
@@ -84,6 +157,15 @@ public class NeuralGuideFragment extends Fragment {
         return camera;
     }
 
+    private void initialiseTextToSpeech() {
+        mTextToSpeech = new TextToSpeech(mNeuralGuideActivity, status -> {
+            if (status != TextToSpeech.SUCCESS) {
+                // TODO: Deal with TTS being unavailable
+                Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
+            }
+        });
+    }
+
     /**
      * Releases the <code>Camera</code> resource for use by other applications.
      */
@@ -91,6 +173,12 @@ public class NeuralGuideFragment extends Fragment {
         if (mCamera != null){
             mCamera.release();
             mCamera = null;
+        }
+    }
+
+    private void initialiseCamera() {
+        if (mCamera == null) {
+            mCamera = getCameraInstance();
         }
     }
 
@@ -141,9 +229,7 @@ public class NeuralGuideFragment extends Fragment {
      * @param root The root view of this fragment.
      */
     private void inflateCameraView(final View root) {
-        if (mCamera == null) {
-            mCamera = getCameraInstance();
-        }
+        initialiseCamera();
 
         if (mCamera == null) {
             // TODO: Deal with camera being unavailable

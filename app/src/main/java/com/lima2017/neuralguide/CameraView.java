@@ -2,6 +2,7 @@ package com.lima2017.neuralguide;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.media.Image;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -86,5 +87,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         catch (Exception e){
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
+    }
+
+    public Image getImage() {
+        // TODO: Implement me
+        return null;
     }
 }
