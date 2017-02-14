@@ -1,6 +1,6 @@
 package com.lima2017.neuralguide.api.web;
 
-import android.media.Image;
+import android.support.annotation.NonNull;
 
 import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
@@ -10,19 +10,20 @@ import com.lima2017.neuralguide.api.OnImageCaptionedListener;
  * endpoint.
  */
 public class NeuralGuideApi implements INeuralGuideApi {
-    /** The asynchronous task to query the API endpoint and retrieve a caption for the image */
-    private final QueryCaptionEndpointTask _task;
+    /** Represents the configuration of the Web API to be used in the requests */
+    private final WebApiConfig _config;
 
     /**
      * Initliases a new instance of the Web API.
-     * @param task The asynchronous task that should be used to query the endpoint.
+     * @param config The configuration used to query the Web API with.
      */
-    public NeuralGuideApi(final QueryCaptionEndpointTask task) {
-        _task = task;
+    public NeuralGuideApi(@NonNull final WebApiConfig config) {
+        _config = config;
     }
 
     @Override
-    public void tryCaptionImage(final byte[] imageData, final OnImageCaptionedListener callback) {
-        _task.execute(imageData);
+    public void tryCaptionImage(@NonNull final byte[] imageData,
+                                @NonNull final OnImageCaptionedListener callback) {
+        new QueryCaptionEndpointTask(_config, callback).execute(imageData);
     }
 }

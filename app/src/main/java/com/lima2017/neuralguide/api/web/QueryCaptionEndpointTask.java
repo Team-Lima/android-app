@@ -1,7 +1,7 @@
 package com.lima2017.neuralguide.api.web;
 
-import android.media.Image;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
@@ -13,18 +13,19 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
     private final OnImageCaptionedListener _listener;
     private final WebApiConfig _config;
 
-    public QueryCaptionEndpointTask(final OnImageCaptionedListener listener, final WebApiConfig config) {
-        _listener = listener;
+    public QueryCaptionEndpointTask(@NonNull final WebApiConfig config,
+                                    @NonNull final OnImageCaptionedListener listener) {
         _config = config;
+        _listener = listener;
     }
 
     @Override
-    protected ImageCaptionResult doInBackground(final byte[]... params) {
+    protected ImageCaptionResult doInBackground(@NonNull final byte[]... params) {
         return null;
     }
 
     @Override
-    protected void onPostExecute(final ImageCaptionResult result) {
+    protected void onPostExecute(@NonNull final ImageCaptionResult result) {
         _listener.onImageCaptioned(result);
     }
 }

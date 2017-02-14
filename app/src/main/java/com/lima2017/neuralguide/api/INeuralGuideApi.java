@@ -1,6 +1,7 @@
 package com.lima2017.neuralguide.api;
 
 import android.media.Image;
+import android.support.annotation.NonNull;
 
 /**
  * A generic representation of the Neural Guide API. This should match
@@ -20,5 +21,5 @@ public interface INeuralGuideApi {
      * @param callback  The callback that should be invoked when the attempt to caption the image
      *                  is completed.
      */
-    void tryCaptionImage(final byte[] imageData, final OnImageCaptionedListener callback);
+    void tryCaptionImage(@NonNull final byte[] imageData, @NonNull final OnImageCaptionedListener callback);
 }

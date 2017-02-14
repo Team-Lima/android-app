@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api;
 
+import android.support.annotation.NonNull;
+
 import java.net.HttpURLConnection;
 
 /**
@@ -23,7 +25,7 @@ public class ImageCaptionResult {
      * @param statusCode The status code associated with the result.
      * @param caption The actual caption returned.
      */
-    public ImageCaptionResult(final int statusCode, final String caption) {
+    public ImageCaptionResult(@NonNull final int statusCode, @NonNull final String caption) {
         _statusCode = statusCode;
         _caption = caption;
     }

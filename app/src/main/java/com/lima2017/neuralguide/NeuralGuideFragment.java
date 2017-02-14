@@ -134,6 +134,7 @@ public class NeuralGuideFragment extends Fragment {
         if (result.success()) {
             final String text = result.getCaption();
             mCaptionTextView.setText(text);
+            showCaptionPane();
             speak(text);
         }
         else {
@@ -196,12 +197,21 @@ public class NeuralGuideFragment extends Fragment {
         }
     }
 
+    private void hideCaptionPane() {
+        mCaptionTextView.animate().translationY(mCaptionTextView.getHeight());
+    }
+
+    private void showCaptionPane() {
+        mCaptionTextView.animate().translationY(0);
+    }
+
     /**
      * Callback called by the CameraView whenever a picture is taken.
      */
     private Callback onPictureTaken = new Callback() {
         @Override
         public void onPictureTaken(final CameraView cameraView, final byte[] data) {
+            hideCaptionPane();
             mNeuralGuideActivity.captionImage(data);
         }
     };

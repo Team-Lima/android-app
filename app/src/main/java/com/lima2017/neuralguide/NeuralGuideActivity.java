@@ -6,7 +6,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.lima2017.neuralguide.api.INeuralGuideApi;
-import com.lima2017.neuralguide.api.demo.NeuralGuideApiDemoMock;
+import com.lima2017.neuralguide.api.web.NeuralGuideApi;
+import com.lima2017.neuralguide.api.web.WebApiConfig;
 
 /**
  * Represents the main activity that the user interacts with. This should act as a Controller of
@@ -30,7 +31,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
 
     /** Temporary constructor - we want to use a DI framework but this will do for now. */
     public NeuralGuideActivity() {
-        this(new NeuralGuideApiDemoMock());
+        this(new NeuralGuideApi(new WebApiConfig()));
     }
 
     /**

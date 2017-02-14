@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api.web;
 
+import android.support.annotation.NonNull;
+
 /**
  * Represents the configuration of the web API to be used by the API querying task.
  */
@@ -23,7 +25,7 @@ public class WebApiConfig {
      * @param version The version of the web API to query.
      * @param baseUrl The base URL at which the web API is being hosted.
      */
-    public WebApiConfig(final String version, final String baseUrl) {
+    public WebApiConfig(@NonNull final String version, @NonNull final String baseUrl) {
         _version = version;
         _baseUrl = baseUrl;
     }

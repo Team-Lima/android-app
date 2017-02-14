@@ -1,6 +1,6 @@
 package com.lima2017.neuralguide.api.demo;
 
-import android.media.Image;
+import android.support.annotation.NonNull;
 
 import java.net.HttpURLConnection;
 
@@ -16,7 +16,8 @@ import com.lima2017.neuralguide.api.ImageCaptionResult;
  */
 public class NeuralGuideApiDemoMock implements INeuralGuideApi {
     @Override
-    public void tryCaptionImage(byte[] imageData, OnImageCaptionedListener callback) {
+    public void tryCaptionImage(@NonNull byte[] imageData,
+                                @NonNull OnImageCaptionedListener callback) {
         callback.onImageCaptioned(new ImageCaptionResult(HttpURLConnection.HTTP_OK, "I think this is a picture of a flower"));
     }
 }
