@@ -17,17 +17,6 @@
         app:facing="back"
         app:flash="off"/>
 
-    <FrameLayout
-        android:id="@+id/fragment_neural_guide_camera_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        android:textColor="#33b5e5"
-        android:textStyle="bold"
-        android:textSize="50sp"
-        android:gravity="center">
-    </FrameLayout>
-
     <TextView
         android:id="@+id/fragment_neural_guide_prompt"
         android:text="@string/camera_tap_or_speak_prompt"
