@@ -3,16 +3,23 @@ package com.lima2017.neuralguide.api.web;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.lima2017.neuralguide.api.NeuralGuideData;
 import com.lima2017.neuralguide.api.NeuralGuideResult;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
 
 /**
  * This asynchronous task queries the API endpoint.
@@ -32,12 +39,12 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
         try {
             //To be dependency injected
             ObjectMapper mapper = new ObjectMapper();
-            //Do work in here
-            //Create API request
-            //Send request
-            //Wait for result
-            String jsonStringImage = "";
-            String jsonStringResult = "";
+            NeuralGuideData data = new NeuralGuideData(params[0]);
+            String jsonStringImage = mapper.writeValueAsString(data);
+
+
+
+            String jsonStringResult = sendPut(jsonStringImage);
             NeuralGuideResult decodedResult = mapper.readValue(jsonStringResult, NeuralGuideResult.class);
             return new ImageCaptionResult(decodedResult.getStatusCode(), decodedResult.getData().getText());
         } catch (IOException e) {
@@ -52,19 +59,32 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
         _listener.onImageCaptioned(result);
     }
 
-    private int sendPut(String data, WebApiConfig webApiConfig) {
-        int responseCode = -1;
-
+    private String sendPut(String data) {
 
         HttpClient httpClient = HttpClients.createDefault();
         try {
-            URL url = new URL(webApiConfig.getBaseUrl() + webApiConfig.getVersion());
+            HttpPost httpPost = new HttpPost(_config.getUrl());
+            httpPost.setEntity(new StringEntity(data));
+            HttpResponse httpResponse = httpClient.execute(httpPost);
 
-        } catch (Exception ex) {
-
-        } finally {
+            int status = httpResponse.getStatusLine().getStatusCode();
+            if (status >= 200 && status < 300) {
+                HttpEntity httpEntity = httpResponse.getEntity();
+                return httpEntity != null ? EntityUtils.toString(httpEntity) : null;
+            } else {
+                throw new ClientProtocolException("Unexpected response status: " + status);
+            }
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+            //TODO
         }
-        return responseCode;
+        catch (IOException e){
+            e.printStackTrace();
+            //TODO
+        }
+        finally {
+        }
+        return null;
     }
 }
 

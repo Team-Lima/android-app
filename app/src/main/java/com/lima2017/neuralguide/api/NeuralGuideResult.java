@@ -2,8 +2,6 @@ package com.lima2017.neuralguide.api;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import java.util.Map;
-
 /**
  * Created by Tamara Norman on 08/02/2017.
  */
@@ -11,7 +9,7 @@ import java.util.Map;
 public class NeuralGuideResult {
     private boolean success;
     private int status_code;
-    private NeuralGuideData data;
+    private NeuralGuideResultData data;
 
     @JsonProperty("success")
     public boolean getSuccess(){
@@ -30,10 +28,10 @@ public class NeuralGuideResult {
     }
 
     @JsonProperty("data")
-    public NeuralGuideData getData() {
+    public NeuralGuideResultData getData() {
         return  data;
     }
-    public void setData(NeuralGuideData data){
+    public void setData(NeuralGuideResultData data){
         this.data = data;
     }
 }

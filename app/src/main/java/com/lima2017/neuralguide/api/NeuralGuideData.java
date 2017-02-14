@@ -1,35 +1,21 @@
 package com.lima2017.neuralguide.api;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
- * Created by Tamara Norman on 09/02/2017.
+ * Created by Tamara Norman on 14/02/2017.
  */
 
 public class NeuralGuideData {
-    private String text;
-    private String[] improvementTips;
-    private int confidence;
+    private final byte[] data;
 
-    public String getText(){
-        return text;
+    public NeuralGuideData(byte[] data){
+        this.data = data;
     }
 
-    public void setText(String text){
-        this.text = text;
+    @JsonProperty("data")
+    public byte[] getData(){
+        return data;
     }
 
-    public String[] getImprovementTips(){
-        return improvementTips;
-    }
-
-    public void setImprovementTips(String[] improvementTips){
-        this.improvementTips = improvementTips;
-    }
-
-    public int getConfidence(){
-        return confidence;
-    }
-
-    public void setConfidence(int Confidence){
-        this.confidence = confidence;
-    }
 }

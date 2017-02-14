@@ -17,7 +17,7 @@ public class WebApiConfig {
      * latest available version and the default base URL.
      */
     public WebApiConfig() {
-        this("0.1", "neuralguide.com");
+        this("1", "neuralguide.com");
     }
 
     /**
@@ -42,5 +42,9 @@ public class WebApiConfig {
      */
     public String getBaseUrl() {
         return _baseUrl;
+    }
+
+    public String getUrl() {
+        return _baseUrl + "/v" + _version + "/caption";
     }
 }
