@@ -30,6 +30,7 @@ android {
 
 dependencies {
     compile files('libs/jackson-all-1.9.0.jar')
+    compile files('libs/httpclient-4.5.3.jar')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

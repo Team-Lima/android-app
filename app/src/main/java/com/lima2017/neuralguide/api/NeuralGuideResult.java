@@ -22,8 +22,8 @@ public class NeuralGuideResult {
     }
 
     @JsonProperty("status")
-    public boolean getStatusCode(){
-        return success;
+    public int getStatusCode(){
+        return status_code;
     }
     public void setStatus_code(int status_code) {
         this.status_code = status_code;
