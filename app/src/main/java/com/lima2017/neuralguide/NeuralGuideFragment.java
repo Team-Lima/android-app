@@ -2,8 +2,9 @@ package com.lima2017.neuralguide;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.TextView;
 
+import com.google.android.cameraview.CameraView;
+import com.google.android.cameraview.CameraView.Callback;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
 /**
@@ -26,61 +29,130 @@ import com.lima2017.neuralguide.api.ImageCaptionResult;
  * @see NeuralGuideActivity
  */
 public class NeuralGuideFragment extends Fragment {
-    /**
-     * An instance of the <code>Camera</code> object which this application has a lock on to.
-     */
-    private Camera mCamera;
-
-    /**
-     * The <code>View</code> through which what the Camera sees is displayed to the user.
-     */
+    /** The View through which what the Camera sees is displayed to the user. */
     private CameraView mCameraView;
 
+    /** TextView holding the result of captioning. */
+    private TextView mCaptionTextView;
+
+    /** TextView holding the 'Tap or say "What is this?"' prompt. */
+    private TextView mPromptTextView;
+
+    /** The Activity holding this fragment must be the NeuralGuideActivity. */
+    private NeuralGuideActivity mNeuralGuideActivity;
+
+    /** An instance of the Android TextToSpeech service. */
+    private TextToSpeech mTextToSpeech;
+
     @Override
-    public View onCreateView(final LayoutInflater inflater,
-                             final ViewGroup container, final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (!(getActivity() instanceof NeuralGuideActivity)) {
+            // If we reach here we are about to hit a cast exception.
+            Log.e(LOG_TAG, "The parent activity must be a NeuralGuideActivity but is not!");
+        }
+
+        mNeuralGuideActivity = (NeuralGuideActivity) getActivity();
+        initialiseTextToSpeech();
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
 
-        if (hasCameraPermission()) {
-            inflateCameraView(root);
-        }
-        else {
+        setUpCameraView(root);
+        setUpPromptTextView(root);
+        setUpCaptionTextView(root);
+
+        if (!hasCameraPermission()) {
             requestCameraPermission();
         }
 
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCameraView.start();
+    }
+
+    @Override
+    public void onPause() {
+        mCameraView.stop();
+        super.onPause();
+    }
+
+    private void setUpPromptTextView(final View root) {
+        mPromptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
+        mPromptTextView.setOnClickListener(view -> mCameraView.takePicture());
+    }
+
+    private void setUpCaptionTextView(final View root) {
+        mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
+
+        mCaptionTextView.setOnClickListener(view -> {
+            final CharSequence text = mCaptionTextView.getText();
+            speak(text);
+        });
+    }
+
+    private void setUpCameraView(final View root) {
+        mCameraView = (CameraView) root.findViewById(R.id.fragment_neural_guide_camera_view);
+        mCameraView.addCallback(onPictureTaken);
+        mCameraView.setOnClickListener(view -> mCameraView.takePicture());
+    }
+
+    /**
+     * Uses the Android Text-to-Speech service to read out the provided text.
+     * @param text The text to be read out.
+     */
+    private void speak(final CharSequence text) {
+        if (mTextToSpeech == null) {
+            // TODO: Deal with this.
+            Log.e(LOG_TAG, "Called 'speak' but no text to speech instance exists.");
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+        else {
+            mTextToSpeech.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
+    /**
+     * Callback for when the captioned state of the current image changes. This will cause the
+     * user interface to reflect the captioning attempt represented by the ImageCaptionResult
+     * object.
+     * @param result The captioning result which should be reflected in the user interface.
+     */
     public void onImageCaptioned(final ImageCaptionResult result) {
-
+        if (result.success()) {
+            final String text = result.getCaption();
+            mCaptionTextView.setText(text);
+            showCaptionPane();
+            speak(text);
+        }
+        else {
+            // TODO: Handle error cases
+        }
     }
 
     /**
-     * Safely obtains a <code>Camera</code> instance. Note that the camera resource could be
-     * locked by another resource, in which case we will fail to obtain it.
-     * @return A Camera object if it successfully could get hold of one, or null if not.
+     * Set up the Android Text-to-Speech service, including dealing with errors from it not being
+     * available.
      */
-    private static Camera getCameraInstance() {
-        Camera camera = null;
-
-        try {
-            camera = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (Exception exception){
-            Log.e(LOG_TAG, "Camera not found: " + exception.getMessage());
-        }
-
-        return camera;
-    }
-
-    /**
-     * Releases the <code>Camera</code> resource for use by other applications.
-     */
-    private void releaseCamera() {
-        if (mCamera != null){
-            mCamera.release();
-            mCamera = null;
-        }
+    private void initialiseTextToSpeech() {
+        mTextToSpeech = new TextToSpeech(mNeuralGuideActivity, status -> {
+            if (status != TextToSpeech.SUCCESS) {
+                // TODO: Deal with TTS being unavailable
+                Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
+            }
+        });
     }
 
     /**
@@ -114,7 +186,7 @@ public class NeuralGuideFragment extends Fragment {
             case PERMISSION_CODE_REQUEST_CAMERA: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    inflateCameraView(getActivity().findViewById(R.id.activity_neural_guide_root));
+                    mCameraView.start();
                 }
                 else {
                     // TODO: Handle permissions denied
@@ -125,25 +197,24 @@ public class NeuralGuideFragment extends Fragment {
         }
     }
 
-    /**
-     * Instantiates the <code>CameraView</code> used to display what the back camera sees to the user.
-     * @param root The root view of this fragment.
-     */
-    private void inflateCameraView(final View root) {
-        if (mCamera == null) {
-            mCamera = getCameraInstance();
-        }
-
-        if (mCamera == null) {
-            // TODO: Deal with camera being unavailable
-            Log.e(LOG_TAG, "Camera was unavailable");
-        }
-        else {
-            mCameraView = new CameraView(getActivity(), mCamera);
-            FrameLayout cameraFrame = (FrameLayout) root.findViewById(R.id.fragment_neural_guide_camera_frame);
-            cameraFrame.addView(mCameraView);
-        }
+    private void hideCaptionPane() {
+        mCaptionTextView.animate().translationY(mCaptionTextView.getHeight());
     }
+
+    private void showCaptionPane() {
+        mCaptionTextView.animate().translationY(0);
+    }
+
+    /**
+     * Callback called by the CameraView whenever a picture is taken.
+     */
+    private Callback onPictureTaken = new Callback() {
+        @Override
+        public void onPictureTaken(final CameraView cameraView, final byte[] data) {
+            hideCaptionPane();
+            mNeuralGuideActivity.captionImage(data);
+        }
+    };
 
     /** The error log tag used for this class */
     private static final String LOG_TAG = "NeuralGuideFragment";

@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api;
 
+import android.support.annotation.NonNull;
+
 /**
  * Callback indicating that the attempt to caption the provided image via the Neural Guide API
  * has been completed.
@@ -15,5 +17,5 @@ public interface OnImageCaptionedListener {
      * Called when the attempt to caption the image has finished.
      * @param result The DTO representing the result of the attempt to caption the image.
      */
-    void onImageCaptioned(final ImageCaptionResult result);
+    void onImageCaptioned(@NonNull final ImageCaptionResult result);
 }

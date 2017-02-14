@@ -1,12 +1,13 @@
 package com.lima2017.neuralguide;
 
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.lima2017.neuralguide.api.INeuralGuideApi;
-import com.lima2017.neuralguide.api.demo.NeuralGuideApiDemoMock;
 import com.lima2017.neuralguide.api.web.NeuralGuideApi;
+import com.lima2017.neuralguide.api.web.WebApiConfig;
 
 /**
  * Represents the main activity that the user interacts with. This should act as a Controller of
@@ -25,16 +26,12 @@ public class NeuralGuideActivity extends AppCompatActivity {
      */
     private final INeuralGuideApi _api;
 
-    /**
-     * The <code>Fragment</code> representing the UI for the Neural Guide activity.
-     */
+    /** The <code>Fragment</code> representing the UI for the Neural Guide activity. */
     private NeuralGuideFragment mFragment;
 
-    /**
-     * Temporary constructor - we want to use a DI framework but this will do for now
-     */
+    /** Temporary constructor - we want to use a DI framework but this will do for now. */
     public NeuralGuideActivity() {
-        this(new NeuralGuideApiDemoMock());
+        this(new NeuralGuideApi(new WebApiConfig()));
     }
 
     /**
@@ -47,15 +44,26 @@ public class NeuralGuideActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        hideStatusBar();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
+
+        mFragment =  (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
     }
 
     /**
      * Uses the Neural Guide API to try to caption the image provided.
      * @param image The Image to be captioned.
      */
-    public void captionImage(final Image image) {
+    public void captionImage(final byte[] image) {
         _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
+    }
+
+    /** Hides the Status Bars from the UI. */
+    private void hideStatusBar() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }
