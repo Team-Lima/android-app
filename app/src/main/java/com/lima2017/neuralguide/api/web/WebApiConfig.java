@@ -44,6 +44,9 @@ public class WebApiConfig {
         return _baseUrl;
     }
 
+    /**
+     * @return The full URL of the Web API to query.
+     */
     public String getUrl() {
         return _baseUrl + "/v" + _version + "/caption";
     }

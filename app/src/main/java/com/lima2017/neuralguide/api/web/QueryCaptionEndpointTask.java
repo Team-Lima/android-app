@@ -3,7 +3,7 @@ package com.lima2017.neuralguide.api.web;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.lima2017.neuralguide.api.Literals;
+import com.lima2017.neuralguide.Literals;
 import com.lima2017.neuralguide.api.NeuralGuideData;
 import com.lima2017.neuralguide.api.NeuralGuideResult;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
@@ -20,7 +20,6 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 
 /**
@@ -34,12 +33,13 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
                                     @NonNull final OnImageCaptionedListener listener) {
         _config = config;
         _listener = listener;
+        //Todo depency inject
     }
 
     @Override
     protected ImageCaptionResult doInBackground(@NonNull final byte[]... params) {
         try {
-            //To be dependency injected
+            //Todo dependency inject
             ObjectMapper mapper = new ObjectMapper();
             NeuralGuideData data = new NeuralGuideData(params[0]);
             String jsonStringImage = mapper.writeValueAsString(data);
@@ -50,9 +50,9 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
         } catch (ClientProtocolException e){
             String[] messageArray = e.getMessage().split(" ");
             int status = Integer.getInteger(messageArray[messageArray.length-1]);
-            return new ImageCaptionResult(status, Literals.HttpRequestFail);
+            return new ImageCaptionResult(status, Literals.HTTP_REQUEST_FAIL);
         } catch (IOException e) {
-            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE, Literals.HttpRequestFail);
+            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE, Literals.HTTP_REQUEST_FAIL);
         }
     }
 

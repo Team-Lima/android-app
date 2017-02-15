@@ -3,35 +3,60 @@ package com.lima2017.neuralguide.api;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Created by Tamara Norman on 08/02/2017.
+ * Represents the formal of the Json returned by the server
  */
 
 public class NeuralGuideResult {
-    private boolean success;
-    private int status_code;
-    private NeuralGuideResultData data;
+    /**Need to clarify if this http success or otherwise*/
+    private boolean mSuccess;
+    /**Status code of the HttpResponce, gives success - is this coupling to Http*/
+    private int mStatusCode;
+    /**The data returned by the server that is sent held in NeuralGuideResultData*/
+    private NeuralGuideResultData mData;
+
 
     @JsonProperty("success")
+    /**
+     * @return The success of the operation
+     */
     public boolean getSuccess(){
-        return success;
+        return mSuccess;
     }
+
+    /**
+     * @param success Set by the Json libary(need to check if needed)
+     */
     public void setSuccess(boolean success){
-        this.success = success;
+        this.mSuccess = success;
     }
 
     @JsonProperty("status")
+    /**
+     * @return The status code returned within the operation
+     */
     public int getStatusCode(){
-        return status_code;
+        return mStatusCode;
     }
+
+    /**
+     * @param status_code Set by the Json libary(need to check if needed)
+     */
     public void setStatus_code(int status_code) {
-        this.status_code = status_code;
+        this.mStatusCode = status_code;
     }
 
     @JsonProperty("data")
+    /**
+     * @return The data returned by the server passsed on to the user via ImageCaptionResult
+     */
     public NeuralGuideResultData getData() {
-        return  data;
+        return  mData;
     }
+
+    /**
+     * @param data Set by the Json libary(need to check if needed)
+     */
     public void setData(NeuralGuideResultData data){
-        this.data = data;
+        this.mData = data;
     }
 }
