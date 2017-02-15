@@ -3,6 +3,7 @@ package com.lima2017.neuralguide.api.web;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.lima2017.neuralguide.api.Literals;
 import com.lima2017.neuralguide.api.NeuralGuideData;
 import com.lima2017.neuralguide.api.NeuralGuideResult;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
@@ -20,6 +21,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 
 /**
  * This asynchronous task queries the API endpoint.
@@ -42,15 +44,15 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
             NeuralGuideData data = new NeuralGuideData(params[0]);
             String jsonStringImage = mapper.writeValueAsString(data);
 
-
-
-            String jsonStringResult = sendPut(jsonStringImage);
+            String jsonStringResult = sendHttpPostRequest(jsonStringImage);
             NeuralGuideResult decodedResult = mapper.readValue(jsonStringResult, NeuralGuideResult.class);
             return new ImageCaptionResult(decodedResult.getStatusCode(), decodedResult.getData().getText());
+        } catch (ClientProtocolException e){
+            String[] messageArray = e.getMessage().split(" ");
+            int status = Integer.getInteger(messageArray[messageArray.length-1]);
+            return new ImageCaptionResult(status, Literals.HttpRequestFail);
         } catch (IOException e) {
-            //What do we want to do on exceptions
-            e.printStackTrace();
-            return null;
+            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE, Literals.HttpRequestFail);
         }
     }
 
@@ -59,10 +61,9 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
         _listener.onImageCaptioned(result);
     }
 
-    private String sendPut(String data) {
+    private String sendHttpPostRequest(String data) throws IOException{
 
         HttpClient httpClient = HttpClients.createDefault();
-        try {
             HttpPost httpPost = new HttpPost(_config.getUrl());
             httpPost.setEntity(new StringEntity(data));
             HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -74,17 +75,6 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
             } else {
                 throw new ClientProtocolException("Unexpected response status: " + status);
             }
-        }catch (UnsupportedEncodingException e){
-            e.printStackTrace();
-            //TODO
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            //TODO
-        }
-        finally {
-        }
-        return null;
     }
 }
 
