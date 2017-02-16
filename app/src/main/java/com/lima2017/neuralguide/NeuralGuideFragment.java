@@ -1,6 +1,7 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -191,13 +193,34 @@ public class NeuralGuideFragment extends Fragment {
      */
     private void requestCameraPermission() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            // TODO Explain to the user why we need the camera
+            createCameraPermissionsRationaleDialog(() -> requestCameraPermissionNoRationale()).show();
         }
         else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA},
-                    PERMISSION_CODE_REQUEST_CAMERA);
+            requestCameraPermissionNoRationale();
         }
+    }
+
+    /**
+     * Requests permission to use the Camera from the user, never displaying the rationale.
+     */
+    private void requestCameraPermissionNoRationale() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.CAMERA},
+                PERMISSION_CODE_REQUEST_CAMERA);
+
+    }
+
+    /**
+     * A dialog displaying the rationale for requesting the Camera permission.
+     */
+    public Dialog createCameraPermissionsRationaleDialog(Runnable onDismiss) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setMessage(R.string.camera_permission_rationale);
+        builder.setPositiveButton(android.R.string.ok, (dialog, id) -> onDismiss.run());
+        builder.setOnDismissListener(dialog -> onDismiss.run());
+
+        return builder.create();
     }
 
     @Override
@@ -210,7 +233,8 @@ public class NeuralGuideFragment extends Fragment {
                     mCameraView.start();
                 }
                 else {
-                    // TODO: Handle permissions denied
+                    // We absolutely need the camera. Try again.
+                    requestCameraPermission();
                 }
 
                 break;

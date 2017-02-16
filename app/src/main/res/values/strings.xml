@@ -7,4 +7,9 @@
     <string name="captioning_failed">Sorry, I can't tell what that is.</string>
     <string name="tip_too_dark">The image was too dark - find somewhere brighter and try again.</string>
     <string name="tip_too_blurry">The image was too blurry - hold your phone steadier.</string>
+
+    <string name="camera_permission_rationale">
+        This app needs to use the camera so it can see what is behind the phone. Please grant
+        permission to access the camera otherwise this app cannot work.
+    </string>
 </resources>
