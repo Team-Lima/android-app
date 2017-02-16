@@ -3,6 +3,8 @@ package com.lima2017.neuralguide.api;
 import android.support.annotation.NonNull;
 
 import java.net.HttpURLConnection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A DTO for passing the results of an image captioning attempt to the user.
@@ -14,11 +16,14 @@ import java.net.HttpURLConnection;
  */
 
 public class ImageCaptionResult {
-    /** The status code of the captioning attempt */
+    /** The status code of the captioning attempt. */
     private final int _statusCode;
 
-    /** The actual caption returned by the server */
+    /** The actual caption returned by the server. */
     private final String _caption;
+
+    /** The list of improvements suggested by the server. */
+    private final Set<ImprovementTip> _improvementTips;
 
     /**
      * The result of querying the API to obtain a caption for the image.
@@ -28,6 +33,7 @@ public class ImageCaptionResult {
     public ImageCaptionResult(@NonNull final int statusCode, @NonNull final String caption) {
         _statusCode = statusCode;
         _caption = caption;
+        _improvementTips = new HashSet<>();
     }
 
     /**
@@ -50,5 +56,12 @@ public class ImageCaptionResult {
      */
     public String getCaption() {
         return _caption;
+    }
+
+    /**
+     * @return The set of improvement tips returned by the API.
+     */
+    public Set<ImprovementTip> getImprovementTips() {
+        return new HashSet<>(_improvementTips);
     }
 }

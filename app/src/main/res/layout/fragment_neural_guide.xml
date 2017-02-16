@@ -40,6 +40,7 @@
         android:textAppearance="@style/neural_guide_result_text_style"
         android:gravity="center_vertical"
         android:elevation="24dp"
-        android:background="#FFFFFFFF" />
+        android:background="#FFFFFFFF"
+        android:translationY="@dimen/neural_guide_result_panel_height"/>
 
 </RelativeLayout>

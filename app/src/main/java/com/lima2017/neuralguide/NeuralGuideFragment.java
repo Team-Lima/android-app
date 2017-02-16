@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.CameraView.Callback;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
+import com.lima2017.neuralguide.api.ImprovementTip;
 
 /**
  * This fragment represents the main user interface components for the Neural Guide application.
@@ -43,6 +44,13 @@ public class NeuralGuideFragment extends Fragment {
 
     /** An instance of the Android TextToSpeech service. */
     private TextToSpeech mTextToSpeech;
+
+    /** A mapping between improvement tips and their text representation to the user */
+    private final ImprovementToTextMapping _textMapping;
+
+    public NeuralGuideFragment() {
+        _textMapping = new ImprovementToTextMapping();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -138,7 +146,20 @@ public class NeuralGuideFragment extends Fragment {
             speak(text);
         }
         else {
-            // TODO: Handle error cases
+            speakImprovementTips(result);
+        }
+    }
+
+    /**
+     * Reads out to the current user information about why captioning a particular image failed.
+     * @param result The ImageCaptionResult representing the failure.
+     */
+    private void speakImprovementTips(final ImageCaptionResult result) {
+        speak(getString(R.string.captioning_failed));
+
+        for (ImprovementTip tip: result.getImprovementTips()) {
+            final String tipAsText = _textMapping.getText(tip, getResources());
+            speak(tipAsText);
         }
     }
 
