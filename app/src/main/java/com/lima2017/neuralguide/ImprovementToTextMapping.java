@@ -19,6 +19,7 @@ public class ImprovementToTextMapping {
      * @param resources The Android resources used to get the string from.
      * @return The string that is mapped to the improvement tip.
      */
+    @NonNull
     public String getText(@NonNull ImprovementTip tip, @NonNull Resources resources) {
         switch (tip) {
             case TooBlurry: return resources.getString(R.string.tip_too_blurry);

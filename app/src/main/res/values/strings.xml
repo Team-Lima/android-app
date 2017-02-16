@@ -12,4 +12,9 @@
         This app needs to use the camera so it can see what is behind the phone. Please grant
         permission to access the camera otherwise this app cannot work.
     </string>
+
+    <string name="text_to_speech_unavailable">
+        We are not able to read out loud what is in front of this device because the utility to do
+        so is not currently available.
+    </string>
 </resources>

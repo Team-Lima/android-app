@@ -1,11 +1,12 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -38,9 +39,6 @@ public class NeuralGuideFragment extends Fragment {
     /** TextView holding the result of captioning. */
     private TextView mCaptionTextView;
 
-    /** TextView holding the 'Tap or say "What is this?"' prompt. */
-    private TextView mPromptTextView;
-
     /** The Activity holding this fragment must be the NeuralGuideActivity. */
     private NeuralGuideActivity mNeuralGuideActivity;
 
@@ -55,7 +53,7 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         if (!(getActivity() instanceof NeuralGuideActivity)) {
@@ -68,8 +66,11 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    @NonNull
+    public View onCreateView(@NonNull  final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+
         final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
 
         setUpCameraView(root);
@@ -95,12 +96,13 @@ public class NeuralGuideFragment extends Fragment {
         super.onPause();
     }
 
-    private void setUpPromptTextView(final View root) {
-        mPromptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
-        mPromptTextView.setOnClickListener(view -> mCameraView.takePicture());
+    private void setUpPromptTextView(@NonNull final View root) {
+        /* TextView holding the 'Tap or say "What is this?"' prompt. */
+        TextView promptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
+        promptTextView.setOnClickListener(view -> mCameraView.takePicture());
     }
 
-    private void setUpCaptionTextView(final View root) {
+    private void setUpCaptionTextView(@NonNull final View root) {
         mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
 
         mCaptionTextView.setOnClickListener(view -> {
@@ -109,7 +111,7 @@ public class NeuralGuideFragment extends Fragment {
         });
     }
 
-    private void setUpCameraView(final View root) {
+    private void setUpCameraView(@NonNull final View root) {
         mCameraView = (CameraView) root.findViewById(R.id.fragment_neural_guide_camera_view);
         mCameraView.addCallback(onPictureTaken);
         mCameraView.setOnClickListener(view -> mCameraView.takePicture());
@@ -119,9 +121,10 @@ public class NeuralGuideFragment extends Fragment {
      * Uses the Android Text-to-Speech service to read out the provided text.
      * @param text The text to be read out.
      */
-    private void speak(final CharSequence text) {
+    @SuppressWarnings("deprecation")
+    private void speak(@NonNull final CharSequence text) {
         if (mTextToSpeech == null) {
-            // TODO: Deal with this.
+            createTextToSpeechUnavailableDialog(null).show();
             Log.e(LOG_TAG, "Called 'speak' but no text to speech instance exists.");
             return;
         }
@@ -140,7 +143,7 @@ public class NeuralGuideFragment extends Fragment {
      * object.
      * @param result The captioning result which should be reflected in the user interface.
      */
-    public void onImageCaptioned(final ImageCaptionResult result) {
+    public void onImageCaptioned(@NonNull final ImageCaptionResult result) {
         if (result.success()) {
             final String text = result.getCaption();
             mCaptionTextView.setText(text);
@@ -156,7 +159,7 @@ public class NeuralGuideFragment extends Fragment {
      * Reads out to the current user information about why captioning a particular image failed.
      * @param result The ImageCaptionResult representing the failure.
      */
-    private void speakImprovementTips(final ImageCaptionResult result) {
+    private void speakImprovementTips(@NonNull final ImageCaptionResult result) {
         speak(getString(R.string.captioning_failed));
 
         for (ImprovementTip tip: result.getImprovementTips()) {
@@ -172,7 +175,7 @@ public class NeuralGuideFragment extends Fragment {
     private void initialiseTextToSpeech() {
         mTextToSpeech = new TextToSpeech(mNeuralGuideActivity, status -> {
             if (status != TextToSpeech.SUCCESS) {
-                // TODO: Deal with TTS being unavailable
+                createTextToSpeechUnavailableDialog(null).show();
                 Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
             }
         });
@@ -193,7 +196,7 @@ public class NeuralGuideFragment extends Fragment {
      */
     private void requestCameraPermission() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            createCameraPermissionsRationaleDialog(() -> requestCameraPermissionNoRationale()).show();
+            createCameraPermissionsRationaleDialog(this::requestCameraPermissionNoRationale).show();
         }
         else {
             requestCameraPermissionNoRationale();
@@ -211,21 +214,57 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     /**
-     * A dialog displaying the rationale for requesting the Camera permission.
+     * Creates a dialog which displays the rationale for requiring the camera to the user.
+     * @param onDismiss A callback to be invoked when the dialog is dismissed.
+     * @return A dialog that, when shown, displays to the user a message indicating that
+     * why the camera permission is required. Note that the dialog is not shown, and so
+     * AlertDialog.show() must be called explicitly.
      */
-    public Dialog createCameraPermissionsRationaleDialog(Runnable onDismiss) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    public AlertDialog createCameraPermissionsRationaleDialog(@Nullable Runnable onDismiss) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.camera_permission_rationale)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(dialog -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .create();
+    }
 
-        builder.setMessage(R.string.camera_permission_rationale);
-        builder.setPositiveButton(android.R.string.ok, (dialog, id) -> onDismiss.run());
-        builder.setOnDismissListener(dialog -> onDismiss.run());
-
-        return builder.create();
+    /**
+     * Creates a dialog which explains to the user that the Android Text-to-Speech service is
+     * unavailable.
+     * @param onDismiss A callback to be invoked when the dialog is dismissed.
+     * @return A dialog that, when shown, displays to the user a message indicating that
+     * Android Text-to-Speech is unavailable. Note that the dialog is not shown, and so
+     * AlertDialog.show() must be called explicitly.
+     */
+    @NonNull
+    public AlertDialog createTextToSpeechUnavailableDialog(@Nullable Runnable onDismiss) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.text_to_speech_unavailable)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(dialog -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .create();
     }
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
-                                           final String permissions[], final int[] grantResults) {
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_CODE_REQUEST_CAMERA: {
                 // If request is cancelled, the result arrays are empty.
@@ -255,7 +294,8 @@ public class NeuralGuideFragment extends Fragment {
      */
     private Callback onPictureTaken = new Callback() {
         @Override
-        public void onPictureTaken(final CameraView cameraView, final byte[] data) {
+        public void onPictureTaken(@NonNull final CameraView cameraView,
+                                   @NonNull final byte[] data) {
             hideCaptionPane();
             mNeuralGuideActivity.captionImage(data);
         }

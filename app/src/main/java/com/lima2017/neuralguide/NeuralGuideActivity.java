@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
@@ -38,12 +40,12 @@ public class NeuralGuideActivity extends AppCompatActivity {
      * @param api The instance of the Neural Guided API through which requests to caption the image
      *            will be routed.
      */
-    public NeuralGuideActivity(final INeuralGuideApi api) {
+    public NeuralGuideActivity(@NonNull final INeuralGuideApi api) {
         _api = api;
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         hideStatusBar();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
@@ -55,7 +57,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
      * Uses the Neural Guide API to try to caption the image provided.
      * @param image The Image to be captioned.
      */
-    public void captionImage(final byte[] image) {
+    public void captionImage(@NonNull final byte[] image) {
         _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
     }
 
