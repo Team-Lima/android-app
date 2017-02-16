@@ -1,6 +1,6 @@
 package com.lima2017.neuralguide.api;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the formal of the Json returned by the server

@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Neural Guide</string>
 
-    <string name="camera_tap_or_speak_prompt">Tap or say \"What is this?\"</string>
+    <string name="camera_tap_or_speak_prompt">Tap or say \&quot;What is this?\&quot;</string>
     <string name="camera_feedback_placeholder_text">I think this is a dog</string>
 
-    <string name="captioning_failed">Sorry, I can't tell what that is.</string>
+    <string name="captioning_failed">Sorry, I can\&apos;t tell what that is.</string>
     <string name="tip_too_dark">The image was too dark - find somewhere brighter and try again.</string>
     <string name="tip_too_blurry">The image was too blurry - hold your phone steadier.</string>
 

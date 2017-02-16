@@ -6,10 +6,7 @@ import android.support.annotation.NonNull;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
-import org.apache.http.client.ClientProtocolException;
-
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 /**
  * This asynchronous task queries the API endpoint.

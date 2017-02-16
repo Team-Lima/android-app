@@ -1,6 +1,5 @@
 package com.lima2017.neuralguide.api;
 
-import android.media.Image;
 import android.support.annotation.NonNull;
 
 /**

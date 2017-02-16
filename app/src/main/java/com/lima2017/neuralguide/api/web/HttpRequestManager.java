@@ -2,11 +2,10 @@ package com.lima2017.neuralguide.api.web;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -28,8 +27,7 @@ public class HttpRequestManager {
      * @throws IOException
      */
     public ApiResponse sendHttpPostRequest(String data) throws IOException {
-
-        HttpClient httpClient = HttpClients.createDefault();
+        HttpClient httpClient = new DefaultHttpClient();
 
         /** Creating post request and setting up given string as entity*/
         HttpPost httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting

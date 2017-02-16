@@ -1,6 +1,6 @@
 package com.lima2017.neuralguide.api;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the format of the Json request to be sent to the server via the web API.

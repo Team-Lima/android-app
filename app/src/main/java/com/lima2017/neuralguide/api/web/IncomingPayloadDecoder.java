@@ -3,7 +3,8 @@ package com.lima2017.neuralguide.api.web;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 import com.lima2017.neuralguide.api.NeuralGuideResult;
 
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
