@@ -40,18 +40,13 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
             String jsonStringImage = _creator.generateOutgoingJsonString(params[0]);
 
             /** Preforms http request */
-            String jsonStringResult = _httpRequest.sendHttpPostRequest(jsonStringImage);
+            ApiResponse response = _httpRequest.sendHttpPostRequest(jsonStringImage);
 
             /**Decodes Json and passes on ImageCaptureResult to the user */
-            return _decoder.generateImageCaptureResultFromPayload(jsonStringResult);
-        } catch (ClientProtocolException e){
-            /** On client protocol exception pass on given status code and request fail string to user */
-            String[] messageArray = e.getMessage().split(" ");
-            int status = Integer.getInteger(messageArray[messageArray.length-1]);
-            return new ImageCaptionResult(status);
+            return _decoder.generateImageCaptureResultFromPayload(response);
         } catch (IOException e) {
-            /** On general IOException send fail Http code as well as request fail string to user */
-            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
+            /** On general IOException send null ImageCaptureResultAsNoDataToSend */
+            return null;
         }
     }
 

@@ -8,7 +8,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.IOException;
 
 /**
- * Takes the Json returned by the server and creates from it an image capture result.
+ * Takes the ApiResponse returned by the server and creates from it an image capture result.
  */
 public class IncomingPayloadDecoder {
     /** Part of the jackson library used to unpack Json*/
@@ -25,11 +25,16 @@ public class IncomingPayloadDecoder {
      * @return ImageCaptureResult to be consumed by the image layer
      * @throws IOException If Json is incorrectly formatted
      */
-    public ImageCaptionResult generateImageCaptureResultFromPayload(String payload) throws IOException{
-        /** Use Jackson library to unpack Json string to relevant Neural Guide results classes*/
-        NeuralGuideResult decodedResult = _objectMapper.readValue(payload, NeuralGuideResult.class);
+    public ImageCaptionResult generateImageCaptureResultFromPayload(ApiResponse payload) throws IOException{
+        if (payload.getStatusCode() >= 200 && payload.getStatusCode() < 300) {
+            /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
+            NeuralGuideResult decodedResult = _objectMapper.readValue(payload.getResponse(), NeuralGuideResult.class);
 
-        /** Extract relevant data for UI layer */
-        return new ImageCaptionResult(decodedResult.getStatusCode(), decodedResult.getData().getText());
+            // Extract relevant data for UI layer
+            return new ImageCaptionResult(payload.getStatusCode(), decodedResult.getData());
+        }
+        else {
+            return new ImageCaptionResult(payload.getStatusCode());
+        }
     }
 }

@@ -24,10 +24,10 @@ public class HttpRequestManager {
     /**
      * Execution of the http post request
      * @param data the Json string that is the payload to be sent
-     * @return returns a Json string which is the return payload
+     * @return returns an Api config holding status and payload if returned
      * @throws IOException
      */
-    public String sendHttpPostRequest(String data) throws IOException {
+    public ApiResponse sendHttpPostRequest(String data) throws IOException {
 
         HttpClient httpClient = HttpClients.createDefault();
 
@@ -46,9 +46,10 @@ public class HttpRequestManager {
         int status = httpResponse.getStatusLine().getStatusCode();
         if (status >= 200 && status < 300) {
             HttpEntity httpEntity = httpResponse.getEntity();
-            return httpEntity != null ? EntityUtils.toString(httpEntity) : null;
+            String payload = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
+            return new ApiResponse(status, payload);
         } else {
-            throw new ClientProtocolException("Unexpected response status: " + status);
+            return new ApiResponse(status);
         }
     }
 }
