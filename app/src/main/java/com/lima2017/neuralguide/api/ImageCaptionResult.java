@@ -23,18 +23,37 @@ public class ImageCaptionResult {
     /** The actual caption returned by the server. */
     private final String _caption;
 
+    /** The successful classification parameter returned by the neural net */
+    private final boolean _classificationSuccess;
+
     /** The list of improvements suggested by the server. */
     private final Set<ImprovementTip> _improvementTips;
 
     /**
      * The result of querying the API to obtain a caption for the image.
      * @param statusCode The status code associated with the result.
-     * @param caption The actual caption returned.
+     * @param data The data returned about the image.
      */
-    public ImageCaptionResult(@NonNull final int statusCode, @NonNull final String caption) {
+    public ImageCaptionResult(final int statusCode, @NonNull final NeuralGuideResultData data) {
         _statusCode = statusCode;
-        _caption = caption;
-        _improvementTips = new HashSet<>();
+        _classificationSuccess = data.getClassificationSuccess();
+        if (_classificationSuccess) {
+            _caption = data.getText();
+        } else {
+            _caption = null;
+        }
+        _improvementTips = null;
+    }
+
+    /**
+     * The result of a failed API query to obtain a caption for the image.
+     * @param statusCode The status code associated with the result.
+     */
+    public ImageCaptionResult(final int statusCode) {
+        _statusCode = statusCode;
+        _classificationSuccess = false;
+        _caption = null;
+        _improvementTips = null;
     }
 
     /**
