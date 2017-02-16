@@ -3,7 +3,6 @@ package com.lima2017.neuralguide.api.web;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.lima2017.neuralguide.Literals;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
@@ -49,10 +48,10 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, ImageCa
             /** On client protocol exception pass on given status code and request fail string to user */
             String[] messageArray = e.getMessage().split(" ");
             int status = Integer.getInteger(messageArray[messageArray.length-1]);
-            return new ImageCaptionResult(status, Literals.HTTP_REQUEST_FAIL);
+            return new ImageCaptionResult(status);
         } catch (IOException e) {
             /** On general IOException send fail Http code as well as request fail string to user */
-            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE, Literals.HTTP_REQUEST_FAIL);
+            return new ImageCaptionResult(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
         }
     }
 

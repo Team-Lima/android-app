@@ -31,6 +31,15 @@ public class ImageCaptionResult {
     }
 
     /**
+     * The result of a failed API query to obtain a caption for the image.
+     * @param statusCode The status code associated with the result.
+     */
+    public ImageCaptionResult(@NonNull final int statusCode) {
+        _statusCode = statusCode;
+        _caption = null;
+    }
+
+    /**
      * @return <code>true</code> if and only if the API successfully generated a caption for the
      * image, even if it is not confident about the result.
      */
