@@ -17,9 +17,11 @@ import java.io.IOException;
  */
 public class HttpRequestManager {
     private final WebApiConfig _config;
+    private final HttpPost _httpPost;
 
     public HttpRequestManager(WebApiConfig config) {
         _config = config;
+        _httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting
     }
 
     /**
@@ -32,11 +34,10 @@ public class HttpRequestManager {
         HttpClient httpClient = new DefaultHttpClient();
 
         // Creating post request and setting up given string as entity
-        HttpPost httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting
-        httpPost.setEntity(new StringEntity(data));
+        _httpPost.setEntity(new StringEntity(data));
 
         // Executing the request and adapting response
-        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpResponse httpResponse = httpClient.execute(_httpPost);
 
         // Checks if it has a valid status i.e if an entity can be reliably got from response
         // If so returns response as string
@@ -56,4 +57,8 @@ public class HttpRequestManager {
     }
 
     private static final String LOG_TAG = "Http Request Manager";
+
+    void abort() {
+        _httpPost.abort();
+    }
 }

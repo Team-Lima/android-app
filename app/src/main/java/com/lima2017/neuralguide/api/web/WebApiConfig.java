@@ -12,7 +12,7 @@ public class WebApiConfig {
     /** The base URL at which the endpoint is hosted */
     private final String _baseUrl;
 
-    /** The timeout after which we give up connecting to the API */
+    /** The getTimeout after which we give up connecting to the API */
     private long mTimeout = 30000;
 
     /**
@@ -55,17 +55,17 @@ public class WebApiConfig {
     }
 
     /**
-     * Sets the timeout after which we should give up trying to connect to the API.
-     * @param timeout The timeout value, in milliseconds.
+     * Sets the getTimeout after which we should give up trying to connect to the API.
+     * @param timeout The getTimeout value, in milliseconds.
      */
     public void setTimeout(long timeout) {
         mTimeout = timeout;
     }
 
     /**
-     * @return The timeout after which we should give up on a failed connection to the API.
+     * @return The timeout after which we should give up on trying to caption the image.
      */
-    public long timeout() {
+    public long getTimeout() {
         return mTimeout;
     }
 }

@@ -2,6 +2,7 @@ package com.lima2017.neuralguide.api.web;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
@@ -35,10 +36,34 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
     }
 
     @Override
+    protected void onPreExecute() {
+        final TimerTask cancelTask = new TimerTask() {
+            @Override
+            public void run() {
+                Log.e(LOG_TAG, "Timeout after " + _config.getTimeout() + "ms on captioning task!");
+                QueryCaptionEndpointTask.this.cancel(true);
+
+                _httpRequest.abort();
+            }
+        };
+
+        new Timer().schedule(cancelTask, _config.getTimeout());
+    }
+
+    @Override
     protected Optional<ImageCaptionResult> doInBackground(@NonNull final byte[]... params) {
         try {
             String jsonStringImage = _creator.generateOutgoingJsonString(params[0]);
+
+            if (isCancelled()) {
+                return Optional.empty();
+            }
+
             ApiResponse response = _httpRequest.sendHttpPostRequest(jsonStringImage);
+
+            if (isCancelled()) {
+                return Optional.empty();
+            }
 
             return Optional.of(_decoder.generateImageCaptureResultFromPayload(response));
 
@@ -50,8 +75,11 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
 
     @Override
     protected void onPostExecute(@NonNull final Optional<ImageCaptionResult> result) {
-        // TODO - we need to think about the situation when the internet is not connected, i.e. when
-        // !result.isPresent(). Perhaps we should have an `onNoInternet` callback too?
+        _listener.onImageCaptioned(result);
+    }
+
+    @Override
+    protected void onCancelled(@NonNull final Optional<ImageCaptionResult> result) {
         _listener.onImageCaptioned(result);
     }
 
