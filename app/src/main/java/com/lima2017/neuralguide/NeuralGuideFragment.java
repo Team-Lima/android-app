@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,8 @@ import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.CameraView.Callback;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 import com.lima2017.neuralguide.api.ImprovementTip;
+
+import java8.util.Optional;
 
 /**
  * This fragment represents the main user interface components for the Neural Guide application.
@@ -143,15 +146,21 @@ public class NeuralGuideFragment extends Fragment {
      * object.
      * @param result The captioning result which should be reflected in the user interface.
      */
-    public void onImageCaptioned(@NonNull final ImageCaptionResult result) {
-        if (result.success()) {
-            final String text = result.getCaption();
-            mCaptionTextView.setText(text);
-            showCaptionPane();
-            speak(text);
+    public void onImageCaptioned(@NonNull final Optional<ImageCaptionResult> result) {
+        if (!result.isPresent()) {
+            Log.d(LOG_TAG, "Image captioning failed due to lack of internet connectivity.");
+            showCaptionPaneWithText(R.string.internet_connection_failed);
+            return;
+        }
+
+        final ImageCaptionResult captionResult = result.get();
+
+        if (captionResult.success() && captionResult.getCaption().isPresent()) {
+            final String text = captionResult.getCaption().get();
+            showCaptionPaneWithText(text);
         }
         else {
-            speakImprovementTips(result);
+            speakImprovementTips(captionResult);
         }
     }
 
@@ -160,12 +169,22 @@ public class NeuralGuideFragment extends Fragment {
      * @param result The ImageCaptionResult representing the failure.
      */
     private void speakImprovementTips(@NonNull final ImageCaptionResult result) {
-        speak(getString(R.string.captioning_failed));
+        showCaptionPaneWithText(R.string.captioning_failed);
 
-        for (ImprovementTip tip: result.getImprovementTips()) {
+        for (final ImprovementTip tip: result.getImprovementTips()) {
             final String tipAsText = _textMapping.getText(tip, getResources());
             speak(tipAsText);
         }
+    }
+
+    private void showCaptionPaneWithText(@StringRes final int stringId) {
+        showCaptionPaneWithText(getString(stringId));
+    }
+
+    private void showCaptionPaneWithText(@NonNull final String text) {
+        mCaptionTextView.setText(text);
+        showCaptionPane();
+        speak(text);
     }
 
     /**
@@ -237,6 +256,63 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     /**
+     * @return <code>true</code> if and only if the user has granted permission for this app to
+     * use the Internet.
+     */
+    private boolean hasInternetPermission() {
+        return PackageManager.PERMISSION_GRANTED ==
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.INTERNET);
+    }
+
+    /**
+     * Requests permission to use the Internet from the user, displaying a rationale if the user
+     * has declined permission in the past.
+     */
+    private void requestInternetPermission() {
+        Log.d(LOG_TAG, "Requesting internet permission");
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.INTERNET)) {
+            createInternetPermissionsRationaleDialog(this::requestInternetPermissionNoRationale).show();
+        }
+        else {
+            requestInternetPermissionNoRationale();
+        }
+    }
+
+    /**
+     * Requests permission to use the Internet from the user, never displaying the rationale.
+     */
+    private void requestInternetPermissionNoRationale() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.INTERNET},
+                PERMISSION_CODE_REQUEST_INTERNET);
+
+    }
+
+    /**
+     * Creates a dialog which displays the rationale for requiring the internet to the user.
+     * @param onDismiss A callback to be invoked when the dialog is dismissed.
+     * @return A dialog that, when shown, displays to the user a message indicating that
+     * why the internet permission is required. Note that the dialog is not shown, and so
+     * AlertDialog.show() must be called explicitly.
+     */
+    public AlertDialog createInternetPermissionsRationaleDialog(@Nullable Runnable onDismiss) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.internet_permission_rationale)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(dialog -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .create();
+    }
+
+    /**
      * Creates a dialog which explains to the user that the Android Text-to-Speech service is
      * unavailable.
      * @param onDismiss A callback to be invoked when the dialog is dismissed.
@@ -278,6 +354,15 @@ public class NeuralGuideFragment extends Fragment {
 
                 break;
             }
+
+            case PERMISSION_CODE_REQUEST_INTERNET: {
+                if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // We absolutely need the internet. Try again.
+                    requestInternetPermission();
+                }
+
+                break;
+            }
         }
     }
 
@@ -296,8 +381,13 @@ public class NeuralGuideFragment extends Fragment {
         @Override
         public void onPictureTaken(@NonNull final CameraView cameraView,
                                    @NonNull final byte[] data) {
-            hideCaptionPane();
-            mNeuralGuideActivity.captionImage(data);
+            if (hasInternetPermission()) {
+                hideCaptionPane();
+                mNeuralGuideActivity.captionImage(data);
+            }
+            else {
+                requestInternetPermission();
+            }
         }
     };
 
@@ -306,4 +396,7 @@ public class NeuralGuideFragment extends Fragment {
 
     /** The code representing this fragment's request to use the Camera */
     private static final int PERMISSION_CODE_REQUEST_CAMERA = 1;
+
+    /** The code representing this fragment's request to use the Internet */
+    private static final int PERMISSION_CODE_REQUEST_INTERNET = 2;
 }

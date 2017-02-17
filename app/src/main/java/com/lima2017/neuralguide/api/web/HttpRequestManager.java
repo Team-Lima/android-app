@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api.web;
 
+import android.util.Log;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,25 +31,29 @@ public class HttpRequestManager {
     public ApiResponse sendHttpPostRequest(String data) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
 
-        /** Creating post request and setting up given string as entity*/
+        // Creating post request and setting up given string as entity
         HttpPost httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting
         httpPost.setEntity(new StringEntity(data));
 
-        /** Executing the request and adapting response*/
+        // Executing the request and adapting response
         HttpResponse httpResponse = httpClient.execute(httpPost);
 
-        /**
-         * Checks if it has a valid status i.e if an entity can be reliably got from response
-         * If so returns response as string
-         * Else throws http error - subclass of IOException
-         */
+        // Checks if it has a valid status i.e if an entity can be reliably got from response
+        // If so returns response as string
+        // Else throws http error - subclass of IOException
+
         int status = httpResponse.getStatusLine().getStatusCode();
+
         if (status >= 200 && status < 300) {
             HttpEntity httpEntity = httpResponse.getEntity();
             String payload = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
             return new ApiResponse(status, payload);
-        } else {
+        }
+        else {
+            Log.d(LOG_TAG, "Request with status " + status + " returned!");
             return new ApiResponse(status);
         }
     }
+
+    private static final String LOG_TAG = "Http Request Manager";
 }

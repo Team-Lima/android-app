@@ -12,6 +12,9 @@ public class WebApiConfig {
     /** The base URL at which the endpoint is hosted */
     private final String _baseUrl;
 
+    /** The timeout after which we give up connecting to the API */
+    private long mTimeout = 30000;
+
     /**
      * Intialises a Web API configuration with the default values. This includes using the
      * latest available version and the default base URL.
@@ -48,6 +51,21 @@ public class WebApiConfig {
      * @return The full URL of the Web API to query.
      */
     public String getUrl() {
-        return _baseUrl + "/v" + _version + "/caption";
+        return "http://" + _baseUrl + "/v" + _version + "/caption";
+    }
+
+    /**
+     * Sets the timeout after which we should give up trying to connect to the API.
+     * @param timeout The timeout value, in milliseconds.
+     */
+    public void setTimeout(long timeout) {
+        mTimeout = timeout;
+    }
+
+    /**
+     * @return The timeout after which we should give up on a failed connection to the API.
+     */
+    public long timeout() {
+        return mTimeout;
     }
 }

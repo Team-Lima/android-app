@@ -2,11 +2,14 @@ package com.lima2017.neuralguide.api.web;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import java8.util.Optional;
 
@@ -29,23 +32,18 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
         _creator = new OutgoingRequestPayloadCreator();
         _httpRequest = new HttpRequestManager(_config);
         _decoder = new IncomingPayloadDecoder();
-
     }
 
     @Override
     protected Optional<ImageCaptionResult> doInBackground(@NonNull final byte[]... params) {
         try {
-            /** Generates json string */
             String jsonStringImage = _creator.generateOutgoingJsonString(params[0]);
-
-            /** Preforms http request */
             ApiResponse response = _httpRequest.sendHttpPostRequest(jsonStringImage);
 
-            /**Decodes Json and passes on ImageCaptureResult to the user */
             return Optional.of(_decoder.generateImageCaptureResultFromPayload(response));
 
         } catch (IOException e) {
-            /** On general IOException send null ImageCaptureResultAsNoDataToSend */
+            Log.e(LOG_TAG, "Caught IOException when trying to caption image with message: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -54,6 +52,8 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
     protected void onPostExecute(@NonNull final Optional<ImageCaptionResult> result) {
         // TODO - we need to think about the situation when the internet is not connected, i.e. when
         // !result.isPresent(). Perhaps we should have an `onNoInternet` callback too?
-        _listener.onImageCaptioned(result.get());
+        _listener.onImageCaptioned(result);
     }
+
+    private static final String LOG_TAG = "QueryEndpointTask";
 }

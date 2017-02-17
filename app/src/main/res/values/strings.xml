@@ -13,8 +13,14 @@
         permission to access the camera otherwise this app cannot work.
     </string>
 
+    <string name="internet_permission_rationale">
+        This app uses the internet to tell it what the camera is seeing. It therefore needs the
+        internet to work. Please grant it Internet permission in order to work.
+    </string>
+
     <string name="text_to_speech_unavailable">
         We are not able to read out loud what is in front of this device because the utility to do
         so is not currently available.
     </string>
+    <string name="internet_connection_failed">No internet connection was found.</string>
 </resources>
