@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.cameraview.CameraView;
@@ -48,6 +49,9 @@ public class NeuralGuideFragment extends Fragment {
     /** An instance of the Android TextToSpeech service. */
     private TextToSpeech mTextToSpeech;
 
+    /** ProgressBar shown to the user whilst captioning is in progress */
+    private ProgressBar mProgressSpinner;
+
     /** A mapping between improvement tips and their text representation to the user */
     private final ImprovementToTextMapping _textMapping;
 
@@ -73,24 +77,25 @@ public class NeuralGuideFragment extends Fragment {
     public View onCreateView(@NonNull  final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-
         final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
 
         setUpCameraView(root);
         setUpPromptTextView(root);
         setUpCaptionTextView(root);
-
-        if (!hasCameraPermission()) {
-            requestCameraPermission();
-        }
-
+        mProgressSpinner = (ProgressBar) root.findViewById(R.id.fragment_neural_guide_progress);
         return root;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mCameraView.start();
+
+        if (hasCameraPermission()) {
+            mCameraView.start();
+        }
+        else {
+            requestCameraPermission();
+        }
     }
 
     @Override
@@ -147,6 +152,8 @@ public class NeuralGuideFragment extends Fragment {
      * @param result The captioning result which should be reflected in the user interface.
      */
     public void onImageCaptioned(@NonNull final Optional<ImageCaptionResult> result) {
+        hideProgressSpinner();
+
         if (!result.isPresent()) {
             Log.d(LOG_TAG, "Image captioning failed due to lack of internet connectivity.");
             showCaptionPaneWithText(R.string.internet_connection_failed);
@@ -374,6 +381,16 @@ public class NeuralGuideFragment extends Fragment {
         mCaptionTextView.animate().translationY(0);
     }
 
+    private void showProgressSpinner() {
+        mProgressSpinner.setVisibility(View.VISIBLE);
+        mCameraView.stop();
+    }
+
+    private void hideProgressSpinner() {
+        mCameraView.start();
+        mProgressSpinner.setVisibility(View.GONE);
+    }
+
     /**
      * Callback called by the CameraView whenever a picture is taken.
      */
@@ -381,13 +398,20 @@ public class NeuralGuideFragment extends Fragment {
         @Override
         public void onPictureTaken(@NonNull final CameraView cameraView,
                                    @NonNull final byte[] data) {
-            if (hasInternetPermission()) {
-                hideCaptionPane();
-                mNeuralGuideActivity.captionImage(data);
-            }
-            else {
+
+            if (!hasInternetPermission()) {
                 requestInternetPermission();
+                return;
             }
+            else if (!hasCameraPermission()) {
+                requestCameraPermission();
+                return;
+            }
+
+            hideCaptionPane();
+            showProgressSpinner();
+
+            mNeuralGuideActivity.captionImage(data);
         }
     };
 

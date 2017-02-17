@@ -43,4 +43,13 @@
         android:background="#FFFFFFFF"
         android:translationY="@dimen/neural_guide_result_panel_height"/>
 
+    <ProgressBar
+        android:id="@+id/fragment_neural_guide_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone">
+    </ProgressBar>
+
 </RelativeLayout>
