@@ -6,10 +6,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Tamara Norman on 21/02/2017.
- */
-
 public class OutgoingRequestPayloadCreatorTest {
     @Test
     public void when_given_valid_byte_array_produces_string () throws Exception {
