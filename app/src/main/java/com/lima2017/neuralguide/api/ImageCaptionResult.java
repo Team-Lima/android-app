@@ -43,6 +43,7 @@ public class ImageCaptionResult {
         } else {
             _caption = null;
         }
+        //Todo unpack improvement tips
         _improvementTips = null;
     }
 
@@ -62,7 +63,7 @@ public class ImageCaptionResult {
      * image, even if it is not confident about the result.
      */
     public boolean success() {
-        return _statusCode == HttpURLConnection.HTTP_OK;
+        return _classificationSuccess;
     }
 
     /**
