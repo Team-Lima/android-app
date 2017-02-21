@@ -16,7 +16,7 @@ public class WebApiConfig {
     private long mTimeout = 30000;
 
     /**
-     * Intialises a Web API configuration with the default values. This includes using the
+     * Initialises a Web API configuration with the default values. This includes using the
      * latest available version and the default base URL.
      */
     public WebApiConfig() {
@@ -34,7 +34,7 @@ public class WebApiConfig {
     }
 
     /**
-     * @return The verion of the Web API to query.
+     * @return The version of the Web API to query.
      */
     public String getVersion() {
         return _version;
