@@ -48,6 +48,7 @@ public class NeuralGuideResultData {
      */
     public void setConfidence(double mConfidence) {
         this.mConfidence = mConfidence;
+        //Is it worth limiting this to between 0 and 1??
     }
 
     /**
