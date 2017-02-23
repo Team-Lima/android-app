@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class NeuralGuideResult {
     /**Success of http request overall operation*/
     private boolean mSuccess;
-    /**Status code of the HttpResponce, gives success*/
+    /**Status code of the HttpResponse, gives success*/
     private int mStatusCode;
     /**The data returned by the server that is sent held in NeuralGuideResultData*/
     private NeuralGuideResultData mData;
