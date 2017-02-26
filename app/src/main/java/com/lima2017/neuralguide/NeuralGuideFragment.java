@@ -1,9 +1,11 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -60,8 +62,11 @@ public class NeuralGuideFragment extends Fragment {
     /** An instance of the Android TextToSpeech service. */
     private TextToSpeech mTextToSpeech;
 
-    /** ProgressBar shown to the user whilst captioning is in progress */
+    /** ProgressBar shown to the user whilst captioning is in progress. */
     private ProgressBar mProgressSpinner;
+
+    /** Android's Vibrator service for providing haptic feedback to users. */
+    private Vibrator mVibrator;
 
     /** A mapping between improvement tips and their text representation to the user */
     private final ImprovementToTextMapping _textMapping;
@@ -93,7 +98,25 @@ public class NeuralGuideFragment extends Fragment {
         setUpCameraView(root);
         setUpCaptionPane(root);
         mProgressSpinner = (ProgressBar) root.findViewById(R.id.fragment_neural_guide_progress);
+        mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+
+        requestPermissions();
+
         return root;
+    }
+
+    private void requestPermissions() {
+        if (!hasInternetPermission()) {
+            requestInternetPermission();
+        }
+
+        if (!hasCameraPermission()) {
+            requestCameraPermission();
+        }
+
+        if (!hasVibratePermission()) {
+            requestVibratePermission();
+        }
     }
 
     @Override
@@ -165,6 +188,7 @@ public class NeuralGuideFragment extends Fragment {
      * @param result The captioning result which should be reflected in the user interface.
      */
     public void onImageCaptioned(@NonNull final Optional<ImageCaptionResult> result) {
+        mCameraView.setEnabled(true);
         hideProgressSpinner();
 
         if (!result.isPresent()) {
@@ -269,6 +293,59 @@ public class NeuralGuideFragment extends Fragment {
     public AlertDialog createCameraPermissionsRationaleDialog(@Nullable Runnable onDismiss) {
         return new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.camera_permission_rationale)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(dialog -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .create();
+    }
+
+    /**
+     * @return <code>true</code> if and only if the user has granted permission for this app to
+     * use the camera.
+     */
+    private boolean hasVibratePermission() {
+        return PackageManager.PERMISSION_GRANTED ==
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.VIBRATE);
+    }
+
+    /**
+     * Requests permission to use haptic feedback from the user, displaying a rationale if the user
+     * has declined permission in the past.
+     */
+    private void requestVibratePermission() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            createVibratePermissionsRationaleDialog(this::requestVibratePermissionNoRationale).show();
+        }
+        else {
+            requestVibratePermissionNoRationale();
+        }
+    }
+
+    /** Requests permission to use haptic feedback from the user, never displaying the rationale. */
+    private void requestVibratePermissionNoRationale() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.VIBRATE},
+                PERMISSION_CODE_REQUEST_VIBRATE);
+
+    }
+
+    /**
+     * Creates a dialog which displays the rationale for requiring haptic feedback to the user.
+     * @param onDismiss A callback to be invoked when the dialog is dismissed.
+     * @return A dialog that, when shown, displays to the user a message indicating that
+     * why the camera permission is required. Note that the dialog is not shown, and so
+     * AlertDialog.show() must be called explicitly.
+     */
+    public AlertDialog createVibratePermissionsRationaleDialog(@Nullable Runnable onDismiss) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.vibrate_permission_rationale)
                 .setPositiveButton(android.R.string.ok, (dialog, id) -> {
                     if (onDismiss != null) {
                         onDismiss.run();
@@ -390,6 +467,10 @@ public class NeuralGuideFragment extends Fragment {
 
                 break;
             }
+
+            case PERMISSION_CODE_REQUEST_VIBRATE: {
+                // This isn't too essential. Let's not worry about it.
+            }
         }
     }
 
@@ -418,20 +499,14 @@ public class NeuralGuideFragment extends Fragment {
         @Override
         public void onPictureTaken(@NonNull final CameraView cameraView,
                                    @NonNull final byte[] data) {
-
-            if (!hasInternetPermission()) {
-                requestInternetPermission();
-                return;
-            }
-            else if (!hasCameraPermission()) {
-                requestCameraPermission();
-                return;
-            }
+            requestPermissions();
 
             hideCaptionPane();
             showProgressSpinner();
 
             mNeuralGuideActivity.captionImage(data);
+            mVibrator.vibrate(VIBRATE_TIME_MILLISECONDS);
+            mCameraView.setEnabled(false);
         }
     };
 
@@ -443,4 +518,10 @@ public class NeuralGuideFragment extends Fragment {
 
     /** The code representing this fragment's request to use the Internet */
     private static final int PERMISSION_CODE_REQUEST_INTERNET = 2;
+
+    /** The code representing this fragment's request to use haptic feedback. */
+    private static final int PERMISSION_CODE_REQUEST_VIBRATE = 3;
+
+    /** Time to vibrate the haptic feedback for. */
+    private static final long VIBRATE_TIME_MILLISECONDS = 1000;
 }

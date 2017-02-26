@@ -28,4 +28,5 @@
     <string name="internet_connection_failed_subtitle">
         Please check that you are connected to the internet.
     </string>
+    <string name="vibrate_permission_rationale">Permission to vibrate the device is required to give feedback to blind and deaf users that the picture was taken and is being analysed.</string>
 </resources>
