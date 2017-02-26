@@ -23,6 +23,9 @@
         so is not currently available.
     </string>
     <string name="internet_connection_failed">
-        Cannot connect to the web service. Please check you are connected to the internet.
+        Cannot connect to the web
+    </string>
+    <string name="internet_connection_failed_subtitle">
+        Please check that you are connected to the internet.
     </string>
 </resources>

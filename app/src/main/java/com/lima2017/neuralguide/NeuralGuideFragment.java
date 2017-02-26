@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,6 +44,12 @@ public class NeuralGuideFragment extends Fragment {
 
     /** TextView holding the result of captioning. */
     private TextView mCaptionTextView;
+
+    /** TextView holding tips and secondary messages to the user. */
+    private TextView mTipsTextView;
+
+    /** ImageView showing an icon reflecting the success or error state of the app to the user. */
+    private ImageView mIconImageView;
 
     /** RelativeLayout holding the result, icon and improvements of captioning. */
     private RelativeLayout mCaptionPanel;
@@ -86,7 +93,9 @@ public class NeuralGuideFragment extends Fragment {
         setUpCameraView(root);
         setUpPromptTextView(root);
         setUpCaptionTextView(root);
+        mTipsTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_tips);
         mProgressSpinner = (ProgressBar) root.findViewById(R.id.fragment_neural_guide_progress);
+        mIconImageView = (ImageView) root.findViewById(R.id.fragment_neural_guide_feedback_icon);
         return root;
     }
 
@@ -161,7 +170,8 @@ public class NeuralGuideFragment extends Fragment {
 
         if (!result.isPresent()) {
             Log.d(LOG_TAG, "Image captioning failed due to lack of internet connectivity.");
-            showCaptionPaneWithText(R.string.internet_connection_failed);
+            showCaptionPaneWithText(R.string.internet_connection_failed,
+                    R.string.internet_connection_failed_subtitle, false);
             return;
         }
 
@@ -169,34 +179,37 @@ public class NeuralGuideFragment extends Fragment {
 
         if (captionResult.success() && captionResult.getCaption().isPresent()) {
             final String text = captionResult.getCaption().get();
-            showCaptionPaneWithText(text);
+            showCaptionPaneWithText(text, null, true);
         }
         else {
-            speakImprovementTips(captionResult);
+            final StringBuilder tips = new StringBuilder();
+
+            for (final ImprovementTip tip: captionResult.getImprovementTips()) {
+                final String tipAsText = _textMapping.getText(tip, getResources());
+                tips.append(tipAsText);
+                tips.append(' ');
+            }
+
+            showCaptionPaneWithText(getString(R.string.captioning_failed), tips.toString(), false);
         }
     }
 
-    /**
-     * Reads out to the current user information about why captioning a particular image failed.
-     * @param result The ImageCaptionResult representing the failure.
-     */
-    private void speakImprovementTips(@NonNull final ImageCaptionResult result) {
-        showCaptionPaneWithText(R.string.captioning_failed);
-
-        for (final ImprovementTip tip: result.getImprovementTips()) {
-            final String tipAsText = _textMapping.getText(tip, getResources());
-            speak(tipAsText);
-        }
+    private void showCaptionPaneWithText(@StringRes final int stringId,
+                                         @StringRes final int subtitleId,
+                                         final boolean success) {
+        showCaptionPaneWithText(getString(stringId), getString(subtitleId), success);
     }
 
-    private void showCaptionPaneWithText(@StringRes final int stringId) {
-        showCaptionPaneWithText(getString(stringId));
-    }
-
-    private void showCaptionPaneWithText(@NonNull final String text) {
+    private void showCaptionPaneWithText(@NonNull final String text,
+                                         @Nullable final String subtitle,
+                                         final boolean success) {
         mCaptionTextView.setText(text);
+        mTipsTextView.setText((subtitle != null) ? subtitle : "");
+        mTipsTextView.setVisibility((subtitle != null) ? View.VISIBLE : View.GONE);
+        speak((subtitle != null) ? text + ". " + subtitle : text);
+        mIconImageView.setImageResource(success ? R.drawable.ic_speaking : R.drawable.ic_error_alert);
+
         showCaptionPane();
-        speak(text);
     }
 
     /**
