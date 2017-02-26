@@ -13,7 +13,7 @@ public class WebApiConfig {
     private final String _baseUrl;
 
     /** The getTimeout after which we give up connecting to the API */
-    private long mTimeout = 30000;
+    private long mTimeout = 5000;
 
     /**
      * Intialises a Web API configuration with the default values. This includes using the

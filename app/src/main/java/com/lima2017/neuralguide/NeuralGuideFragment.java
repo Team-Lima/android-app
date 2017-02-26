@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.cameraview.CameraView;
@@ -42,6 +43,9 @@ public class NeuralGuideFragment extends Fragment {
 
     /** TextView holding the result of captioning. */
     private TextView mCaptionTextView;
+
+    /** RelativeLayout holding the result, icon and improvements of captioning. */
+    private RelativeLayout mCaptionPanel;
 
     /** The Activity holding this fragment must be the NeuralGuideActivity. */
     private NeuralGuideActivity mNeuralGuideActivity;
@@ -105,12 +109,13 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     private void setUpPromptTextView(@NonNull final View root) {
-        /* TextView holding the 'Tap or say "What is this?"' prompt. */
+        // TextView holding the 'Tap or say "What is this?"' prompt.
         TextView promptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
         promptTextView.setOnClickListener(view -> mCameraView.takePicture());
     }
 
     private void setUpCaptionTextView(@NonNull final View root) {
+        mCaptionPanel = (RelativeLayout) root.findViewById(R.id.fragment_neural_guide_feedback_panel);
         mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
 
         mCaptionTextView.setOnClickListener(view -> {
@@ -374,11 +379,11 @@ public class NeuralGuideFragment extends Fragment {
     }
 
     private void hideCaptionPane() {
-        mCaptionTextView.animate().translationY(mCaptionTextView.getHeight());
+        mCaptionPanel.animate().translationY(mCaptionPanel.getHeight());
     }
 
     private void showCaptionPane() {
-        mCaptionTextView.animate().translationY(0);
+        mCaptionPanel.animate().translationY(0);
     }
 
     private void showProgressSpinner() {

@@ -21,7 +21,7 @@
     </style>
 
     <style name="neural_guide_result_text_style">
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:gravity">center</item>
     </style>
 
