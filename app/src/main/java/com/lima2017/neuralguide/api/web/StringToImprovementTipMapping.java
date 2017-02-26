@@ -17,8 +17,8 @@ public class StringToImprovementTipMapping {
     @NonNull
     public ImprovementTip getImprovementTip(@NonNull String text){
         switch (text) {
-            case "too_blurry": return ImprovementTip.TooBlurry;
-            case "too_dark": return  ImprovementTip.TooDark;
+            case "blurry": return ImprovementTip.TooBlurry;
+            case "dark": return  ImprovementTip.TooDark;
         }
 
         throw new RuntimeException("Missing mapping between String and Improvement Tip");
