@@ -18,6 +18,7 @@ import java8.util.Optional;
  */
 
 public class ImageCaptionResult {
+    private final StringToImprovementTipMapping _stringMapper;
     /** The status code of the captioning attempt. */
     private final int _statusCode;
 
@@ -36,6 +37,7 @@ public class ImageCaptionResult {
      * @param data The data returned about the image.
      */
     public ImageCaptionResult(final int statusCode, @NonNull final NeuralGuideResultData data) {
+        _stringMapper = new StringToImprovementTipMapping();
         _statusCode = statusCode;
         _classificationSuccess = data.getClassificationSuccess();
         if (_classificationSuccess) {
@@ -43,7 +45,8 @@ public class ImageCaptionResult {
         } else {
             _caption = null;
         }
-        _improvementTips = null;
+        //Todo unpack improvement tips
+        _improvementTips = createImprovementTipsSet(data.getImprovementTips());
     }
 
     /**
@@ -51,6 +54,7 @@ public class ImageCaptionResult {
      * @param statusCode The status code associated with the result.
      */
     public ImageCaptionResult(final int statusCode) {
+        _stringMapper = new StringToImprovementTipMapping();
         _statusCode = statusCode;
         _classificationSuccess = false;
         _caption = null;
@@ -62,7 +66,7 @@ public class ImageCaptionResult {
      * image, even if it is not confident about the result.
      */
     public boolean success() {
-        return _statusCode == HttpURLConnection.HTTP_OK;
+        return _classificationSuccess;
     }
 
     /**
@@ -85,6 +89,16 @@ public class ImageCaptionResult {
      */
     @NonNull
     public Set<ImprovementTip> getImprovementTips() {
-        return new HashSet<>(_improvementTips);
+        return _improvementTips;
+    }
+
+    private Set<ImprovementTip> createImprovementTipsSet(String[] improvementTips) {
+        Set<ImprovementTip> set = new HashSet<ImprovementTip>();
+        if (improvementTips != null){
+            for (String tip: improvementTips) {
+                set.add(_stringMapper.getImprovementTip(tip));
+            }
+        }
+        return set;
     }
 }

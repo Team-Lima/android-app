@@ -6,7 +6,7 @@ import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 
 /**
- * Represents a concrete implenetation of the Neural Guide API, actually calling the Web API
+ * Represents a concrete implementation of the Neural Guide API, actually calling the Web API
  * endpoint.
  */
 public class NeuralGuideApi implements INeuralGuideApi {
@@ -14,7 +14,7 @@ public class NeuralGuideApi implements INeuralGuideApi {
     private final WebApiConfig _config;
 
     /**
-     * Initliases a new instance of the Web API.
+     * Initialises a new instance of the Web API.
      * @param config The configuration used to query the Web API with.
      */
     public NeuralGuideApi(@NonNull final WebApiConfig config) {

@@ -10,7 +10,7 @@ public class NeuralGuideData {
     private final byte[] mData;
 
     /**
-     * Initalises a NeuralGuideData with the specified values
+     * Initialises a NeuralGuideData with the specified values
      * @param data The image data to be sent to the server
      */
     public NeuralGuideData(byte[] data){
