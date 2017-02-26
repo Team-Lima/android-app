@@ -17,18 +17,6 @@
         app:facing="back"
         app:flash="off"/>
 
-    <TextView
-        android:id="@+id/fragment_neural_guide_prompt"
-        android:text="@string/camera_tap_or_speak_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/neural_guide_prompt_height"
-        android:layout_margin="@dimen/neural_guide_prompt_margin"
-        android:textAppearance="@style/neural_guide_prompt_text_style"
-        android:gravity="center_vertical"
-        android:padding="@dimen/neural_guide_prompt_padding"
-        android:elevation="8dp"
-        android:background="@drawable/card" />
-
     <RelativeLayout
         android:id="@+id/fragment_neural_guide_feedback_panel"
         android:layout_width="match_parent"
@@ -37,15 +25,13 @@
         android:layout_alignParentEnd="true"
         android:background="#FFFFFFFF"
         android:translationY="@dimen/neural_guide_result_panel_height"
-        android:elevation="24dp"
-        android:visibility="visible">
+        android:elevation="24dp" >
 
         <ImageView
             android:id="@+id/fragment_neural_guide_feedback_icon"
             android:layout_width="68dp"
             android:padding="16dp"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_speaking"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true" />
 
@@ -58,7 +44,7 @@
 
             <TextView
                 android:id="@+id/fragment_neural_guide_feedback_text"
-                android:text="@string/camera_feedback_placeholder_text"
+                android:text="@string/camera_tap_or_speak_prompt"
                 android:layout_width="match_parent"
                 android:maxLines="1"
                 android:ellipsize="marquee"
@@ -68,7 +54,7 @@
 
             <TextView
                 android:id="@+id/fragment_neural_guide_feedback_tips"
-                android:text="@string/camera_feedback_placeholder_text"
+                android:text="@string/camera_tap_or_speak_prompt_listening"
                 android:layout_width="match_parent"
                 android:maxLines="1"
                 android:ellipsize="marquee"

@@ -91,11 +91,8 @@ public class NeuralGuideFragment extends Fragment {
         final View root = inflater.inflate(R.layout.fragment_neural_guide, container, false);
 
         setUpCameraView(root);
-        setUpPromptTextView(root);
-        setUpCaptionTextView(root);
-        mTipsTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_tips);
+        setUpCaptionPane(root);
         mProgressSpinner = (ProgressBar) root.findViewById(R.id.fragment_neural_guide_progress);
-        mIconImageView = (ImageView) root.findViewById(R.id.fragment_neural_guide_feedback_icon);
         return root;
     }
 
@@ -117,20 +114,22 @@ public class NeuralGuideFragment extends Fragment {
         super.onPause();
     }
 
-    private void setUpPromptTextView(@NonNull final View root) {
-        // TextView holding the 'Tap or say "What is this?"' prompt.
-        TextView promptTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_prompt);
-        promptTextView.setOnClickListener(view -> mCameraView.takePicture());
-    }
-
-    private void setUpCaptionTextView(@NonNull final View root) {
+    private void setUpCaptionPane(@NonNull final View root) {
         mCaptionPanel = (RelativeLayout) root.findViewById(R.id.fragment_neural_guide_feedback_panel);
         mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
+        mTipsTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_tips);
+        mIconImageView = (ImageView) root.findViewById(R.id.fragment_neural_guide_feedback_icon);
 
-        mCaptionTextView.setOnClickListener(view -> {
-            final CharSequence text = mCaptionTextView.getText();
-            speak(text);
-        });
+        mCaptionPanel.setOnClickListener(view -> speakCaptionPanelContents());
+
+        mIconImageView.setImageResource(R.drawable.ic_info);
+        showCaptionPane();
+    }
+
+    private void speakCaptionPanelContents() {
+        final CharSequence text = mCaptionTextView.getText();
+        final CharSequence tips = mTipsTextView.getText();
+        speak(text + ". " + tips);
     }
 
     private void setUpCameraView(@NonNull final View root) {
@@ -221,6 +220,9 @@ public class NeuralGuideFragment extends Fragment {
             if (status != TextToSpeech.SUCCESS) {
                 createTextToSpeechUnavailableDialog(null).show();
                 Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
+            }
+            else {
+                speakCaptionPanelContents();
             }
         });
     }
