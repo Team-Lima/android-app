@@ -1,7 +1,6 @@
 package com.lima2017.neuralguide.api.web;
 
 import com.lima2017.neuralguide.api.ImageCaptionResult;
-import com.lima2017.neuralguide.api.NeuralGuideResult;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

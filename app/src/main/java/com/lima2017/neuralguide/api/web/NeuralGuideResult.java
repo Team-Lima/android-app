@@ -1,4 +1,4 @@
-package com.lima2017.neuralguide.api;
+package com.lima2017.neuralguide.api.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

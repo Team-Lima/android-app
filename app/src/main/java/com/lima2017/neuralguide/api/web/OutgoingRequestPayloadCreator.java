@@ -1,7 +1,5 @@
 package com.lima2017.neuralguide.api.web;
 
-import com.lima2017.neuralguide.api.NeuralGuideData;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.lima2017.neuralguide.api;
+package com.lima2017.neuralguide.api.web;
 
 /**
  * Represents the format of the data section of the Json received by the client.

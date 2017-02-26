@@ -1,6 +1,8 @@
-package com.lima2017.neuralguide.api;
+package com.lima2017.neuralguide.api.web;
 
 import android.support.annotation.NonNull;
+
+import com.lima2017.neuralguide.api.ImprovementTip;
 
 /**
  * Maps the strings returned from the server to the ImprovementTips.
@@ -15,10 +17,10 @@ public class StringToImprovementTipMapping {
     @NonNull
     public ImprovementTip getImprovementTip(@NonNull String text){
         switch (text) {
-            case "too blurry": return ImprovementTip.TooBlurry;
-            case "too dark": return  ImprovementTip.TooDark;
+            case "too_blurry": return ImprovementTip.TooBlurry;
+            case "too_dark": return  ImprovementTip.TooDark;
         }
 
-        throw new RuntimeException("Missing mapping between string and Improvement Tip");
+        throw new RuntimeException("Missing mapping between String and Improvement Tip");
     }
 }

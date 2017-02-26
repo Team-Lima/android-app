@@ -1,4 +1,7 @@
-package com.lima2017.neuralguide.api;
+package com.lima2017.neuralguide.api.web;
+
+import com.lima2017.neuralguide.api.web.NeuralGuideResult;
+import com.lima2017.neuralguide.api.web.NeuralGuideResultData;
 
 import org.junit.Test;
 

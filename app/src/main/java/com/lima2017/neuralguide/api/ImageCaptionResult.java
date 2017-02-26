@@ -1,8 +1,11 @@
 package com.lima2017.neuralguide.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import java.net.HttpURLConnection;
+import com.lima2017.neuralguide.api.web.NeuralGuideResultData;
+import com.lima2017.neuralguide.api.web.StringToImprovementTipMapping;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +16,7 @@ import java8.util.Optional;
  *
  * For Neural Guide WebAPI v0.1
  *
- * @author Henry Thompson
+ * @author Henry Thompson, Tamara Norman
  * @version 1.0
  */
 
@@ -29,7 +32,7 @@ public class ImageCaptionResult {
     private final boolean _classificationSuccess;
 
     /** The list of improvements suggested by the server. */
-    private final Set<ImprovementTip> _improvementTips;
+    private final HashSet<ImprovementTip> _improvementTips;
 
     /**
      * The result of querying the API to obtain a caption for the image.
@@ -40,12 +43,7 @@ public class ImageCaptionResult {
         _stringMapper = new StringToImprovementTipMapping();
         _statusCode = statusCode;
         _classificationSuccess = data.getClassificationSuccess();
-        if (_classificationSuccess) {
-            _caption = data.getText();
-        } else {
-            _caption = null;
-        }
-        //Todo unpack improvement tips
+        _caption = _classificationSuccess ? data.getText() : null;
         _improvementTips = createImprovementTipsSet(data.getImprovementTips());
     }
 
@@ -88,17 +86,19 @@ public class ImageCaptionResult {
      * @return The set of improvement tips returned by the API.
      */
     @NonNull
-    public Set<ImprovementTip> getImprovementTips() {
+    public HashSet<ImprovementTip> getImprovementTips() {
         return _improvementTips;
     }
 
-    private Set<ImprovementTip> createImprovementTipsSet(String[] improvementTips) {
-        Set<ImprovementTip> set = new HashSet<ImprovementTip>();
+    private HashSet<ImprovementTip> createImprovementTipsSet(@Nullable final String[] improvementTips) {
+        final HashSet<ImprovementTip> set = new HashSet<>();
+
         if (improvementTips != null){
-            for (String tip: improvementTips) {
+            for (final String tip: improvementTips) {
                 set.add(_stringMapper.getImprovementTip(tip));
             }
         }
+
         return set;
     }
 }

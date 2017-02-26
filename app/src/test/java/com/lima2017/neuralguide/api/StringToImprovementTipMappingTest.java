@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api;
 
+import com.lima2017.neuralguide.api.web.StringToImprovementTipMapping;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

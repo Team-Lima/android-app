@@ -1,7 +1,5 @@
 package com.lima2017.neuralguide.api.web;
 
-import com.lima2017.neuralguide.api.NeuralGuideData;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

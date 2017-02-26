@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <com.google.android.cameraview.CameraView
+    <RelativeLayout
         android:id="@+id/fragment_neural_guide_camera_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,19 +37,8 @@
         android:layout_alignParentEnd="true"
         android:background="#FFFFFFFF"
         android:translationY="@dimen/neural_guide_result_panel_height"
-        android:elevation="24dp" >
-
-        <TextView
-            android:id="@+id/fragment_neural_guide_feedback_text"
-            android:text="@string/camera_feedback_placeholder_text"
-            android:layout_width="match_parent"
-            android:padding="@dimen/neural_guide_result_panel_padding"
-            android:textAppearance="@style/neural_guide_result_text_style"
-            android:gravity="center_vertical"
-            android:layout_height="48dp"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/fragment_neural_guide_feedback_icon"
-            android:layout_alignParentBottom="true" />
+        android:elevation="24dp"
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/fragment_neural_guide_feedback_icon"
@@ -59,6 +48,32 @@
             app:srcCompat="@drawable/ic_volume_up_black_36dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_toEndOf="@+id/fragment_neural_guide_feedback_icon">
+
+            <TextView
+                android:id="@+id/fragment_neural_guide_feedback_text"
+                android:text="@string/camera_feedback_placeholder_text"
+                android:layout_width="match_parent"
+                android:padding="@dimen/neural_guide_result_panel_padding"
+                android:textAppearance="@style/neural_guide_result_text_style"
+                android:gravity="center_vertical"
+                android:layout_height="48dp" />
+
+            <TextView
+                android:id="@+id/fragment_neural_guide_feedback_tips"
+                android:text="@string/camera_feedback_placeholder_text"
+                android:layout_width="match_parent"
+                android:padding="@dimen/neural_guide_result_panel_padding"
+                android:textAppearance="@style/neural_guide_result_text_style"
+                android:gravity="center_vertical"
+                android:layout_height="48dp" />
+        </LinearLayout>
 
     </RelativeLayout>
 
