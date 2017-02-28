@@ -1,6 +1,7 @@
 package com.lima2017.neuralguide;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -27,6 +28,8 @@ import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.CameraView.Callback;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 import com.lima2017.neuralguide.api.ImprovementTip;
+
+import javax.inject.Inject;
 
 import java8.util.Optional;
 
@@ -69,11 +72,7 @@ public class NeuralGuideFragment extends Fragment {
     private Vibrator mVibrator;
 
     /** A mapping between improvement tips and their text representation to the user */
-    private final ImprovementToTextMapping _textMapping;
-
-    public NeuralGuideFragment() {
-        _textMapping = new ImprovementToTextMapping();
-    }
+    @Inject private ImprovementToTextMapping mTextMapping;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -208,7 +207,7 @@ public class NeuralGuideFragment extends Fragment {
             final StringBuilder tips = new StringBuilder();
 
             for (final ImprovementTip tip: captionResult.getImprovementTips()) {
-                final String tipAsText = _textMapping.getText(tip, getResources());
+                final String tipAsText = mTextMapping.getText(tip, getResources());
                 tips.append(tipAsText);
                 tips.append(' ');
             }

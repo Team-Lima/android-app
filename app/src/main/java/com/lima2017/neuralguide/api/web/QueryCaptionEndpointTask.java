@@ -5,12 +5,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.inject.Inject;
 
 import java8.util.Optional;
 
@@ -19,20 +22,16 @@ import java8.util.Optional;
  */
 public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optional<ImageCaptionResult>> {
     private final OnImageCaptionedListener _listener;
-    private final WebApiConfig _config;
-    private final OutgoingRequestPayloadCreator _creator;
+    private final ObjectMapper _objectMapper;
     private final HttpRequestManager _httpRequest;
-    private final IncomingPayloadDecoder _decoder;
 
-
-    public QueryCaptionEndpointTask(@NonNull final WebApiConfig config,
-                                    @NonNull final OnImageCaptionedListener listener) {
-        _config = config;
+    @Inject
+    public QueryCaptionEndpointTask(@NonNull final OnImageCaptionedListener listener,
+                                    @NonNull final ObjectMapper mapper,
+                                    @NonNull final HttpRequestManager requestManager) {
         _listener = listener;
-        //Todo dependency inject
-        _creator = new OutgoingRequestPayloadCreator();
-        _httpRequest = new HttpRequestManager(_config);
-        _decoder = new IncomingPayloadDecoder();
+        _objectMapper = mapper;
+        _httpRequest = requestManager;
     }
 
     @Override
@@ -40,24 +39,21 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
         final TimerTask cancelTask = new TimerTask() {
             @Override
             public void run() {
-                Log.e(LOG_TAG, "Timeout after " + _config.getTimeout() + "ms on captioning task!");
+                Log.e(LOG_TAG, "Timeout after " + _httpRequest.getTimeout() + "ms on captioning task!");
                 QueryCaptionEndpointTask.this.cancel(true);
 
                 _httpRequest.abort();
             }
         };
 
-        new Timer().schedule(cancelTask, _config.getTimeout());
+        new Timer().schedule(cancelTask, _httpRequest.getTimeout());
     }
 
     @Override
     protected Optional<ImageCaptionResult> doInBackground(@NonNull final byte[]... params) {
         try {
-            String jsonStringImage = _creator.generateOutgoingJsonString(params[0]);
-
-            if (isCancelled()) {
-                return Optional.empty();
-            }
+            NeuralGuideData data = new NeuralGuideData(params[0]);
+            String jsonStringImage = _objectMapper.writeValueAsString(data);
 
             ApiResponse response = _httpRequest.sendHttpPostRequest(jsonStringImage);
 
@@ -65,11 +61,28 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
                 return Optional.empty();
             }
 
-            return Optional.of(_decoder.generateImageCaptureResultFromPayload(response));
+            return Optional.of(generateImageCaptureResultFromPayload(response));
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Caught IOException when trying to caption image with message: " + e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Unpacks Json to turn it into correct form for UI layer
+     * @param payload The Json string return from HttpRequest
+     * @return ImageCaptureResult to be consumed by the image layer
+     * @throws IOException If Json is incorrectly formatted
+     */
+    private ImageCaptionResult generateImageCaptureResultFromPayload(ApiResponse payload) throws IOException{
+        if (payload.getStatusCode() >= 200 && payload.getStatusCode() < 300) {
+            /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
+            NeuralGuideResult decodedResult = _objectMapper.readValue(payload.getResponse(), NeuralGuideResult.class);
+            return new ImageCaptionResult(payload.getStatusCode(), decodedResult.getData());
+        }
+        else {
+            return new ImageCaptionResult(payload.getStatusCode());
         }
     }
 

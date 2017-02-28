@@ -1,5 +1,6 @@
 package com.lima2017.neuralguide.api.web;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -12,6 +13,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 /**
  * Manages the creation of the http post request using the apache library.
  */
@@ -19,7 +22,8 @@ public class HttpRequestManager {
     private final WebApiConfig _config;
     private final HttpPost _httpPost;
 
-    public HttpRequestManager(WebApiConfig config) {
+    @Inject
+    public HttpRequestManager(@NonNull final WebApiConfig config) {
         _config = config;
         _httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting
     }
@@ -54,6 +58,11 @@ public class HttpRequestManager {
             Log.d(LOG_TAG, "Request with status " + status + " returned!");
             return new ApiResponse(status);
         }
+    }
+
+    /** @return The timeout for the connection in milliseconds. */
+    public long getTimeout() {
+        return _config.getTimeout();
     }
 
     private static final String LOG_TAG = "Http Request Manager";

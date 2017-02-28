@@ -14,7 +14,7 @@ public class NeuralGuideData {
      * @param data The image data to be sent to the server
      */
     public NeuralGuideData(byte[] data){
-        this.mData = data;
+        mData = data;
     }
 
     /**

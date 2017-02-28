@@ -15,10 +15,10 @@ public class NeuralGuideResult {
     private NeuralGuideResultData mData;
 
 
-    @JsonProperty("success")
     /**
      * @return The success of the operation
      */
+    @JsonProperty("success")
     public boolean getSuccess(){
         return mSuccess;
     }
@@ -30,10 +30,10 @@ public class NeuralGuideResult {
         mSuccess = success;
     }
 
-    @JsonProperty("status")
     /**
      * @return The status code returned within the operation
      */
+    @JsonProperty("status")
     public int getStatusCode(){
         return mStatusCode;
     }
@@ -45,10 +45,10 @@ public class NeuralGuideResult {
         mStatusCode = statusCode;
     }
 
-    @JsonProperty("data")
     /**
      * @return The data returned by the server passsed on to the user via ImageCaptionResult
      */
+    @JsonProperty("data")
     public NeuralGuideResultData getData() {
         return  mData;
     }

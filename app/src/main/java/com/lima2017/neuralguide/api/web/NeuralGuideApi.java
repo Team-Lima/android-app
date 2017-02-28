@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 
+import javax.inject.Inject;
+
 /**
  * Represents a concrete implementation of the Neural Guide API, actually calling the Web API
  * endpoint.
@@ -17,6 +19,7 @@ public class NeuralGuideApi implements INeuralGuideApi {
      * Initialises a new instance of the Web API.
      * @param config The configuration used to query the Web API with.
      */
+    @Inject
     public NeuralGuideApi(@NonNull final WebApiConfig config) {
         _config = config;
     }
