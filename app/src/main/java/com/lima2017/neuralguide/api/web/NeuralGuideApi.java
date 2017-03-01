@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 
-import javax.inject.Inject;
-
 /**
  * Represents a concrete implementation of the Neural Guide API, actually calling the Web API
  * endpoint.
@@ -22,19 +20,28 @@ public class NeuralGuideApi implements INeuralGuideApi {
     private final ObjectMapper _objectManager;
 
     /**
-     * Initialises a new instance of the Web API.
-     * @param requestManager The HTTP Request Manager used to perform the requests to the API.
+     * The mapping between the Strings provided by the JSON to represent improvement tips and the
+     * Java enums.
      */
-    @Inject
-    public NeuralGuideApi(@NonNull final HttpRequestManager requestManager,
-                          @NonNull final ObjectMapper objectMapper) {
+    private final StringToImprovementTipMapping _stringMapper;
+
+    /** The Dagger WebApiModule providing the query caption endpoint tasks. */
+    private final WebApiModule _module;
+
+    public NeuralGuideApi(@NonNull final WebApiModule module,
+                          @NonNull final HttpRequestManager requestManager,
+                          @NonNull final ObjectMapper objectMapper,
+                          @NonNull final StringToImprovementTipMapping stringMapper) {
+        _module = module;
         _requestManager = requestManager;
         _objectManager = objectMapper;
+        _stringMapper = stringMapper;
     }
 
     @Override
     public void tryCaptionImage(@NonNull final byte[] imageData,
                                 @NonNull final OnImageCaptionedListener callback) {
-        new QueryCaptionEndpointTask(callback, _objectManager, _requestManager).execute(imageData);
+        _module.provideQueryCaptionEndpoindTask(callback, _objectManager, _requestManager, _stringMapper)
+                .execute(imageData);
     }
 }

@@ -4,29 +4,34 @@ import com.lima2017.neuralguide.api.web.StringToImprovementTipMapping;
 
 import org.junit.Test;
 
+import java8.util.Optional;
+
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class StringToImprovementTipMappingTest {
 
     @Test
-    public void when_given_correct_string_too_blurry () {
+    public void maps_blurry_to_enum () {
         StringToImprovementTipMapping instance = new StringToImprovementTipMapping();
-        ImprovementTip result = instance.getImprovementTip("too blurry");
+        Optional<ImprovementTip> result = instance.getImprovementTip("blurry");
 
-        assertEquals(ImprovementTip.TooBlurry, result);
+        assertEquals(ImprovementTip.TooBlurry, result.get());
     }
 
     @Test
-    public void when_given_incorrect_string_throws_exception () {
+    public void maps_dark_to_enum () {
         StringToImprovementTipMapping instance = new StringToImprovementTipMapping();
-        boolean exceptionThrown = false;
-        try {
-            instance.getImprovementTip("hello");
-        } catch (RuntimeException e){
-            exceptionThrown = true;
-        }
+        Optional<ImprovementTip> result = instance.getImprovementTip("dark");
 
-        assertTrue(exceptionThrown);
+        assertEquals(ImprovementTip.TooDark, result.get());
+    }
+
+    @Test
+    public void when_given_incorrect_string_returns_empty () {
+        StringToImprovementTipMapping instance = new StringToImprovementTipMapping();
+        Optional<ImprovementTip> result = instance.getImprovementTip("hello");
+        assertFalse(result.isPresent());
     }
 }

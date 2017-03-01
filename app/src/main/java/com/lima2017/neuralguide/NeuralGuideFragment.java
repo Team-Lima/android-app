@@ -208,9 +208,12 @@ public class NeuralGuideFragment extends Fragment {
             final StringBuilder tips = new StringBuilder();
 
             for (final ImprovementTip tip: captionResult.getImprovementTips()) {
-                final String tipAsText = mTextMapping.getText(tip, getResources());
-                tips.append(tipAsText);
-                tips.append(' ');
+                final Optional<String> tipAsText = mTextMapping.getText(tip, getResources());
+
+                if (tipAsText.isPresent()) {
+                    tips.append(tipAsText.get());
+                    tips.append(' ');
+                }
             }
 
             showCaptionPaneWithText(getString(R.string.captioning_failed), tips.toString(), false);

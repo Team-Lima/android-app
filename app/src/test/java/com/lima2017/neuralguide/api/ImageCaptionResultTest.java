@@ -4,32 +4,34 @@ import com.lima2017.neuralguide.api.web.NeuralGuideResultData;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+
 import java8.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
 public class ImageCaptionResultTest {
-    private final int statusCode = 100;
+    private final int STATUS_CODE_100 = 100;
 
     @Test
-    public void on_creation_when_only_given_status_code_instructor () {
-        ImageCaptionResult instance = new ImageCaptionResult(statusCode);
+    public void create_with_only_given_status_code_instructor () {
+        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100);
 
-        assertEquals(statusCode, instance.getStatusCode());
+        assertEquals(STATUS_CODE_100, instance.getStatusCode());
         assertEquals(Optional.empty(), instance.getCaption());
         assertEquals(false, instance.success());
         assertEquals(null, instance.getImprovementTips());
     }
 
     @Test
-    public void on_creation_with_caption_without_improvement_tips () {
+    public void create_with_caption_without_improvement_tips () {
         NeuralGuideResultData data = new NeuralGuideResultData();
         data.setClassificationSuccess(true);
         data.setText("a dog");
 
-        ImageCaptionResult instance = new ImageCaptionResult(statusCode, data);
+        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100, data, new HashSet<>());
 
-        assertEquals(statusCode, instance.getStatusCode());
+        assertEquals(STATUS_CODE_100, instance.getStatusCode());
         assertEquals(Optional.of("a dog"), instance.getCaption());
         assertEquals(true, instance.success());
         assertEquals(true, instance.getImprovementTips().isEmpty());
@@ -39,11 +41,14 @@ public class ImageCaptionResultTest {
     public void on_creation_without_caption_with_improvement_tips () {
         NeuralGuideResultData data = new NeuralGuideResultData();
         data.setClassificationSuccess(false);
-        data.setImprovementTips(new String[]{"too dark", "too blurry"});
 
-        ImageCaptionResult instance = new ImageCaptionResult(statusCode, data);
+        HashSet<ImprovementTip> tips = new HashSet<>();
+        tips.add(ImprovementTip.TooBlurry);
+        tips.add(ImprovementTip.TooDark);
 
-        assertEquals(statusCode, instance.getStatusCode());
+        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100, data, tips);
+
+        assertEquals(STATUS_CODE_100, instance.getStatusCode());
         assertEquals(Optional.empty(), instance.getCaption());
         assertEquals(false, instance.success());
         assertEquals(false, instance.getImprovementTips().isEmpty());

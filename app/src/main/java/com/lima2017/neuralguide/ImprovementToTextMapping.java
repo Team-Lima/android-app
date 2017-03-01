@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.lima2017.neuralguide.api.ImprovementTip;
 
+import java8.util.Optional;
+
 /**
  * Maps the improvement tips returned from the server to the text to be read out to the user.
  *
@@ -20,12 +22,12 @@ public class ImprovementToTextMapping {
      * @return The string that is mapped to the improvement tip.
      */
     @NonNull
-    public String getText(@NonNull ImprovementTip tip, @NonNull Resources resources) {
+    public Optional<String> getText(@NonNull ImprovementTip tip, @NonNull Resources resources) {
         switch (tip) {
-            case TooBlurry: return resources.getString(R.string.tip_too_blurry);
-            case TooDark:   return resources.getString(R.string.tip_too_dark);
+            case TooBlurry: return Optional.of(resources.getString(R.string.tip_too_blurry));
+            case TooDark:   return Optional.of(resources.getString(R.string.tip_too_dark));
         }
 
-        throw new RuntimeException("Missing mapping between some improvement tip and its string");
+        return Optional.empty();
     }
 }

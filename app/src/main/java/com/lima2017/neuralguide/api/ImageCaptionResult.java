@@ -1,12 +1,13 @@
 package com.lima2017.neuralguide.api;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.lima2017.neuralguide.api.web.NeuralGuideResultData;
-import com.lima2017.neuralguide.api.web.StringToImprovementTipMapping;
 
 import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 import java8.util.Optional;
 
@@ -15,13 +16,12 @@ import java8.util.Optional;
  *
  * For Neural Guide WebAPI v0.1
  *
- * @author Henry Thompson, Tamara Norman
+ * @author Henry Thompson
+ * @author Tamara Norman
  * @version 1.0
  */
 
 public class ImageCaptionResult {
-    private final StringToImprovementTipMapping _stringMapper;
-
     /** The status code of the captioning attempt. */
     private final int _statusCode;
 
@@ -39,12 +39,13 @@ public class ImageCaptionResult {
      * @param statusCode The status code associated with the result.
      * @param data The data returned about the image.
      */
-    public ImageCaptionResult(final int statusCode, @NonNull final NeuralGuideResultData data) {
-        _stringMapper = new StringToImprovementTipMapping();
+    public ImageCaptionResult(final int statusCode,
+                              @NonNull final NeuralGuideResultData data,
+                              @NonNull final Set<ImprovementTip> improvementTips) {
         _statusCode = statusCode;
         _classificationSuccess = data.getClassificationSuccess();
         _caption = _classificationSuccess ? data.getText() : null;
-        _improvementTips = createImprovementTipsSet(data.getImprovementTips());
+        _improvementTips = new HashSet<>(improvementTips);
     }
 
     /**
@@ -52,7 +53,6 @@ public class ImageCaptionResult {
      * @param statusCode The status code associated with the result.
      */
     public ImageCaptionResult(final int statusCode) {
-        _stringMapper = new StringToImprovementTipMapping();
         _statusCode = statusCode;
         _classificationSuccess = false;
         _caption = null;
@@ -82,17 +82,5 @@ public class ImageCaptionResult {
     @NonNull
     public HashSet<ImprovementTip> getImprovementTips() {
         return _improvementTips;
-    }
-
-    private HashSet<ImprovementTip> createImprovementTipsSet(@Nullable final String[] improvementTips) {
-        final HashSet<ImprovementTip> set = new HashSet<>();
-
-        if (improvementTips != null){
-            for (final String tip: improvementTips) {
-                set.add(_stringMapper.getImprovementTip(tip));
-            }
-        }
-
-        return set;
     }
 }

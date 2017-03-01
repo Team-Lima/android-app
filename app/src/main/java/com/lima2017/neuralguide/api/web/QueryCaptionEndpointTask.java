@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lima2017.neuralguide.api.ImprovementTip;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,14 +29,17 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
     private final OnImageCaptionedListener _listener;
     private final ObjectMapper _objectMapper;
     private final HttpRequestManager _httpRequest;
+    private final StringToImprovementTipMapping _stringMapping;
 
     @Inject
     public QueryCaptionEndpointTask(@NonNull final OnImageCaptionedListener listener,
                                     @NonNull final ObjectMapper mapper,
-                                    @NonNull final HttpRequestManager requestManager) {
+                                    @NonNull final HttpRequestManager requestManager,
+                                    @NonNull final StringToImprovementTipMapping stringMapping) {
         _listener = listener;
         _objectMapper = mapper;
         _httpRequest = requestManager;
+        _stringMapping = stringMapping;
     }
 
     @Override
@@ -82,7 +87,8 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
         if (payload.getStatusCode() >= 200 && payload.getStatusCode() < 300) {
             /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
             NeuralGuideResult decodedResult = _objectMapper.readValue(payload.getResponse(), NeuralGuideResult.class);
-            return new ImageCaptionResult(payload.getStatusCode(), decodedResult.getData());
+            Set<ImprovementTip> tips = _stringMapping.createImprovementTipsSet(decodedResult.getData().getImprovementTips());
+            return new ImageCaptionResult(payload.getStatusCode(), decodedResult.getData(), tips);
         }
         else {
             return new ImageCaptionResult(payload.getStatusCode());

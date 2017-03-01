@@ -8,7 +8,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.lima2017.neuralguide.api.DaggerNeuralGuideApiComponent;
-import com.lima2017.neuralguide.api.INeuralGuideApi;
 import com.lima2017.neuralguide.api.NeuralGuideApiComponent;
 import com.lima2017.neuralguide.api.web.WebApiModule;
 

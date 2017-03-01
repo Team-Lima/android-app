@@ -17,18 +17,22 @@ import dagger.Provides;
  */
 @Module
 public class WebApiModule {
-    @Provides INeuralGuideApi provideApi(@NonNull final HttpRequestManager requestManager,
-                                         @NonNull final ObjectMapper objectMapper) {
-        return new NeuralGuideApi(requestManager, objectMapper);
-    }
-
     @Provides WebApiConfig provideWebApiConfig() {
         return new WebApiConfig();
     }
 
-    @Provides NeuralGuideApi provideNeuralGuideApi(@NonNull final HttpRequestManager requestManager,
-                                                   @NonNull final ObjectMapper objectMapper) {
-        return new NeuralGuideApi(requestManager, objectMapper);
+    @Provides INeuralGuideApi provideApi(@NonNull final HttpRequestManager requestManager,
+                                        @NonNull final ObjectMapper objectMapper,
+                                        @NonNull final StringToImprovementTipMapping stringMapper) {
+        return new NeuralGuideApi(this, requestManager, objectMapper, stringMapper);
+    }
+
+    @Provides StringToImprovementTipMapping provideStringToImprovementTipMapping() {
+        return new StringToImprovementTipMapping();
+    }
+
+    @Provides HttpRequestManager provideHttpRequestManager(@NonNull final WebApiConfig config) {
+        return new HttpRequestManager(config);
     }
 
     @Provides ObjectMapper provideObjectMapper() {
@@ -37,7 +41,8 @@ public class WebApiModule {
 
     @Provides QueryCaptionEndpointTask provideQueryCaptionEndpoindTask(@NonNull final OnImageCaptionedListener listener,
                                                                        @NonNull final ObjectMapper mapper,
-                                                                       @NonNull final HttpRequestManager requestManager) {
-        return new QueryCaptionEndpointTask(listener, mapper, requestManager);
+                                                                       @NonNull final HttpRequestManager requestManager,
+                                                                       @NonNull final StringToImprovementTipMapping stringMapping) {
+        return new QueryCaptionEndpointTask(listener, mapper, requestManager, stringMapping);
     }
 }

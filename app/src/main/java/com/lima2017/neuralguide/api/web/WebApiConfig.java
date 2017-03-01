@@ -62,7 +62,7 @@ public class WebApiConfig {
      * Sets the getTimeout after which we should give up trying to connect to the API.
      * @param timeout The getTimeout value, in milliseconds.
      */
-    public void setTimeout(long timeout) {
+    public void setTimeout(final long timeout) {
         mTimeout = timeout;
     }
 
