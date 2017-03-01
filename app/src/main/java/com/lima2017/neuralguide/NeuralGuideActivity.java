@@ -7,9 +7,10 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.lima2017.neuralguide.api.DaggerNeuralGuideApiComponent;
 import com.lima2017.neuralguide.api.INeuralGuideApi;
-import com.lima2017.neuralguide.api.web.NeuralGuideApi;
-import com.lima2017.neuralguide.api.web.WebApiConfig;
+import com.lima2017.neuralguide.api.NeuralGuideApiComponent;
+import com.lima2017.neuralguide.api.web.WebApiModule;
 
 /**
  * Represents the main activity that the user interacts with. This should act as a Controller of
@@ -21,27 +22,16 @@ import com.lima2017.neuralguide.api.web.WebApiConfig;
  * @version 1.0
  */
 public class NeuralGuideActivity extends AppCompatActivity {
-
-    /**
-     * The instance of the Neural Guide API used by this Activity when relaying user commands to
-     * the endpoint, and from which results will eminate.
-     */
-    private final INeuralGuideApi _api;
+    /** The Dagger component holding the API dependencies. */
+    private final NeuralGuideApiComponent _apiComponent;
 
     /** The <code>Fragment</code> representing the UI for the Neural Guide activity. */
     private NeuralGuideFragment mFragment;
 
-    /** Temporary constructor - we want to use a DI framework but this will do for now. */
     public NeuralGuideActivity() {
-        this(new NeuralGuideApi(new WebApiConfig()));
-    }
-
-    /**
-     * @param api The instance of the Neural Guided API through which requests to caption the image
-     *            will be routed.
-     */
-    public NeuralGuideActivity(@NonNull final INeuralGuideApi api) {
-        _api = api;
+        _apiComponent = DaggerNeuralGuideApiComponent.builder()
+                .webApiModule(new WebApiModule())
+                .build();
     }
 
     @Override
@@ -49,6 +39,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
         hideStatusBar();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
+
 
         mFragment =  (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
     }
@@ -58,7 +49,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
      * @param image The Image to be captioned.
      */
     public void captionImage(@NonNull final byte[] image) {
-        _api.tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
+        _apiComponent.api().tryCaptionImage(image, result -> mFragment.onImageCaptioned(result));
     }
 
     /** Hides the Status Bars from the UI. */

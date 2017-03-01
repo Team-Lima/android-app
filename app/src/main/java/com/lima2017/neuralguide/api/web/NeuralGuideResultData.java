@@ -2,18 +2,21 @@ package com.lima2017.neuralguide.api.web;
 
 /**
  * Represents the format of the data section of the Json received by the client.
+ *
+ * @author Tamara Norman
+ * @version 1.0
  */
 public class NeuralGuideResultData {
-    /**The text returned in the Json to show to the user*/
+    /** The text returned in the Json to show to the user*/
     private String mText;
 
-    /**The improvement tips received to be conveyed to the user*/
+    /** The improvement tips received to be conveyed to the user*/
     private String[] mImprovementTips;
 
-    /**The confidence interval returned from the server*/
+    /** The confidence interval returned from the server*/
     private double mConfidence;
 
-    /**Whether the neural network returned a successful response*/
+    /** Whether the neural network returned a successful response*/
     private boolean mClassificationSuccess;
 
     /**
@@ -69,5 +72,4 @@ public class NeuralGuideResultData {
      * @return The classification status of the neural net indicating if text exists
      */
     public boolean getClassificationSuccess () { return mClassificationSuccess; }
-
 }

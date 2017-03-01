@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the format of the Json request to be sent to the server via the web API.
+ *
+ * @author Tamara Norman
+ * @version 1.0
  */
 public class NeuralGuideData {
     /**The image data to send to the server*/

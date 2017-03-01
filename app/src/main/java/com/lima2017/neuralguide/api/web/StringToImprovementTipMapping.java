@@ -6,8 +6,10 @@ import com.lima2017.neuralguide.api.ImprovementTip;
 
 /**
  * Maps the strings returned from the server to the ImprovementTips.
+ *
+ * @author Henry Thompson
+ * @version 1.0
  */
-
 public class StringToImprovementTipMapping {
     /**
      * Maps the string format of the improvement tip to the Improvement enum to be passed to the client.

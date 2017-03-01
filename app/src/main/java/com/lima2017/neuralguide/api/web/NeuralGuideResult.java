@@ -3,9 +3,11 @@ package com.lima2017.neuralguide.api.web;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Represents the formal of the Json returned by the server
+ * Represents the formal of the Json returned by the server.
+ *
+ * @author Tamara Norman
+ * @version 1.0
  */
-
 public class NeuralGuideResult {
     /**Success of http request overall operation*/
     private boolean mSuccess;

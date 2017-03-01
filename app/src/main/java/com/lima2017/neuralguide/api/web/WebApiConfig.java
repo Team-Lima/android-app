@@ -4,6 +4,10 @@ import android.support.annotation.NonNull;
 
 /**
  * Represents the configuration of the web API to be used by the API querying task.
+ *
+ * @author Henry Thompson
+ * @author Tamara Norman
+ * @version 1.0
  */
 public class WebApiConfig {
     /** The version of the endpoint to query */

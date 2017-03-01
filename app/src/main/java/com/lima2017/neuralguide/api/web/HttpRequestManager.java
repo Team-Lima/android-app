@@ -25,7 +25,7 @@ public class HttpRequestManager {
     @Inject
     public HttpRequestManager(@NonNull final WebApiConfig config) {
         _config = config;
-        _httpPost = new HttpPost(_config.getUrl());//Does this need dependency injecting
+        _httpPost = new HttpPost(_config.getUrl());
     }
 
     /**

@@ -1,9 +1,11 @@
 package com.lima2017.neuralguide.api.web;
 
 /**
- * Holder to hold the data returned from the Api request before decoding.
+ * DTO to hold the data returned from the Api request before decoding.
+ *
+ * @author Tamara Norman
+ * @version 1.0
  */
-
 public class ApiResponse {
     private final int _statusCode;
     private final String _response;
@@ -26,5 +28,4 @@ public class ApiResponse {
     public String getResponse() {
         return _response;
     }
-
 }
