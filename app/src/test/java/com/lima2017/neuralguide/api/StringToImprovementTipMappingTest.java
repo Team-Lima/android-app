@@ -11,11 +11,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class StringToImprovementTipMappingTest {
+    private static final String BLURRY = "blurry";
+    private static final String DARK = "dark";
 
     @Test
     public void maps_blurry_to_enum () {
         StringToImprovementTipMapping instance = new StringToImprovementTipMapping();
-        Optional<ImprovementTip> result = instance.getImprovementTip("blurry");
+        Optional<ImprovementTip> result = instance.getImprovementTip(BLURRY);
 
         assertEquals(ImprovementTip.TooBlurry, result.get());
     }
@@ -23,7 +25,7 @@ public class StringToImprovementTipMappingTest {
     @Test
     public void maps_dark_to_enum () {
         StringToImprovementTipMapping instance = new StringToImprovementTipMapping();
-        Optional<ImprovementTip> result = instance.getImprovementTip("dark");
+        Optional<ImprovementTip> result = instance.getImprovementTip(DARK);
 
         assertEquals(ImprovementTip.TooDark, result.get());
     }
