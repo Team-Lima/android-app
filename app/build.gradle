@@ -42,6 +42,10 @@ android {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
@@ -52,12 +56,9 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
     provided 'javax.annotation:jsr250-api:1.0'
 
+    compile "net.sourceforge.streamsupport:streamsupport:1.5.1"
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    compile "net.sourceforge.streamsupport:streamsupport:1.5.1"
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:support-v4:25.2.0'
-    testCompile 'junit:junit:4.12'
 }
