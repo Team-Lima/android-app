@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "624718567609",
+    "project_id": "neural-guide"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624718567609:android:2b39ce0c01fa914c",
+        "android_client_info": {
+          "package_name": "com.lima2017.neuralguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "624718567609-i5qas6gfukotqqqtg32rm0blvosne9h1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lima2017.neuralguide",
+            "certificate_hash": "91b9ce0575f0661347676859c353c8f04681a321"
+          }
+        },
+        {
+          "client_id": "624718567609-ja0vbu5svh6l5q79pvtnk1rn3pjrrq2d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBBe5CmiBgb39mj0TNp_HSlhuXPsNv2HY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

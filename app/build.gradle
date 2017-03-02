@@ -3,10 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+    apply plugin: 'com.google.gms.google-services'
+
     useLibrary 'org.apache.http.legacy'
 
+    // Required for Google Sign-In
     defaultConfig {
-        applicationId "uk.ac.cam.cl.lima2017.neuralguide"
+        applicationId "com.lima2017.neuralguide"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
