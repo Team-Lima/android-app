@@ -14,7 +14,7 @@ import com.lima2017.neuralguide.api.OnImageCaptionedListener;
  */
 public class NeuralGuideApi implements INeuralGuideApi {
     /** The HTTP Request Manager configured to contact the Web API. */
-    private final HttpRequestManager _requestManager;
+    private final IHttpRequestManager _requestManager;
 
     /** The ObjectManager used to construct the JSON objects. */
     private final ObjectMapper _objectManager;
@@ -29,7 +29,7 @@ public class NeuralGuideApi implements INeuralGuideApi {
     private final WebApiModule _module;
 
     public NeuralGuideApi(@NonNull final WebApiModule module,
-                          @NonNull final HttpRequestManager requestManager,
+                          @NonNull final IHttpRequestManager requestManager,
                           @NonNull final ObjectMapper objectMapper,
                           @NonNull final StringToImprovementTipMapping stringMapper) {
         _module = module;

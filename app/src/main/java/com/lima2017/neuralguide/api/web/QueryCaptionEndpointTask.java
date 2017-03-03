@@ -28,13 +28,13 @@ import java8.util.Optional;
 public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optional<ImageCaptionResult>> {
     private final OnImageCaptionedListener _listener;
     private final ObjectMapper _objectMapper;
-    private final HttpRequestManager _httpRequest;
+    private final IHttpRequestManager _httpRequest;
     private final StringToImprovementTipMapping _stringMapping;
 
     @Inject
     public QueryCaptionEndpointTask(@NonNull final OnImageCaptionedListener listener,
                                     @NonNull final ObjectMapper mapper,
-                                    @NonNull final HttpRequestManager requestManager,
+                                    @NonNull final IHttpRequestManager requestManager,
                                     @NonNull final StringToImprovementTipMapping stringMapping) {
         _listener = listener;
         _objectMapper = mapper;
