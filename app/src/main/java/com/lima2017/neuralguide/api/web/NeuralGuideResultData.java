@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api.web;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Represents the format of the data section of the Json received by the client.
  *

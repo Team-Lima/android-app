@@ -26,6 +26,7 @@ public class HttpRequestManager {
     public HttpRequestManager(@NonNull final WebApiConfig config) {
         _config = config;
         _httpPost = new HttpPost(_config.getUrl());
+        _httpPost.setHeader("Content-Type", "application/json");
     }
 
     /**
@@ -52,6 +53,8 @@ public class HttpRequestManager {
         if (status >= 200 && status < 300) {
             HttpEntity httpEntity = httpResponse.getEntity();
             String payload = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
+            Log.d("Server Response", payload);
+
             return new ApiResponse(status, payload);
         }
         else {

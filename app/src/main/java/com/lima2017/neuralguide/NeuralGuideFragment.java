@@ -200,22 +200,22 @@ public class NeuralGuideFragment extends Fragment {
 
         final ImageCaptionResult captionResult = result.get();
 
+        final StringBuilder tips = new StringBuilder();
+
+        for (final ImprovementTip tip: captionResult.getImprovementTips()) {
+            final Optional<String> tipAsText = mTextMapping.getText(tip, getResources());
+
+            if (tipAsText.isPresent()) {
+                tips.append(tipAsText.get());
+                tips.append(' ');
+            }
+        }
+
         if (captionResult.success() && captionResult.getCaption().isPresent()) {
             final String text = captionResult.getCaption().get();
-            showCaptionPaneWithText(text, null, true);
+            showCaptionPaneWithText(text, tips.toString(), true);
         }
         else {
-            final StringBuilder tips = new StringBuilder();
-
-            for (final ImprovementTip tip: captionResult.getImprovementTips()) {
-                final Optional<String> tipAsText = mTextMapping.getText(tip, getResources());
-
-                if (tipAsText.isPresent()) {
-                    tips.append(tipAsText.get());
-                    tips.append(' ');
-                }
-            }
-
             showCaptionPaneWithText(getString(R.string.captioning_failed), tips.toString(), false);
         }
     }
@@ -229,10 +229,12 @@ public class NeuralGuideFragment extends Fragment {
     private void showCaptionPaneWithText(@NonNull final String text,
                                          @Nullable final String subtitle,
                                          final boolean success) {
+        boolean hasSubtitle = subtitle != null && subtitle.length() > 0;
+
         mCaptionTextView.setText(text);
-        mTipsTextView.setText((subtitle != null) ? subtitle : "");
-        mTipsTextView.setVisibility((subtitle != null) ? View.VISIBLE : View.GONE);
-        speak((subtitle != null) ? text + ". " + subtitle : text);
+        mTipsTextView.setText(hasSubtitle ? subtitle : "");
+        mTipsTextView.setVisibility(hasSubtitle ? View.VISIBLE : View.GONE);
+        speak(hasSubtitle ? text + ". " + subtitle : text);
         mIconImageView.setImageResource(success ? R.drawable.ic_speaking : R.drawable.ic_error_alert);
 
         showCaptionPane();
