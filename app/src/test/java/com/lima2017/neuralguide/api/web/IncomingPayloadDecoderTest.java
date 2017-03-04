@@ -9,7 +9,7 @@ import java8.util.Optional;
 import static org.junit.Assert.assertEquals;
 
 public class IncomingPayloadDecoderTest {
-    @Test
+   /* @Test
     public void when_invalid_status_code_returns_image_caption_result_with_no_data () throws Exception {
         ApiResponse input = new ApiResponse(100);
 
@@ -64,5 +64,5 @@ public class IncomingPayloadDecoderTest {
         assertEquals(result.getCaption(), Optional.empty());
         //assertEquals(result.getImprovementTips().contains("too blurry"), true);
         assertEquals(result.success(), true);
-    }
+    }*/
 }

@@ -5,8 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class OutgoingRequestPayloadCreatorTest {
-    @Test
-    public void when_given_valid_byte_array_produces_string () throws Exception {
+    /*public void when_given_valid_byte_array_produces_string () throws Exception {
         byte[] bytes = new byte[10];
         for (byte i = 0; i < 10; i++){
             bytes[i] = i;
@@ -26,5 +25,5 @@ public class OutgoingRequestPayloadCreatorTest {
         String result = instance.generateOutgoingJsonString(bytes);
 
         assertEquals("{\"data\":null}", result);
-    }
+    }*/
 }

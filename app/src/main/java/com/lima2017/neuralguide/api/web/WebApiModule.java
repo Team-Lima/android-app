@@ -21,7 +21,7 @@ public class WebApiModule {
         return new WebApiConfig();
     }
 
-    @Provides INeuralGuideApi provideApi(@NonNull final HttpRequestManager requestManager,
+    @Provides INeuralGuideApi provideApi(@NonNull final IHttpRequestManager requestManager,
                                         @NonNull final ObjectMapper objectMapper,
                                         @NonNull final StringToImprovementTipMapping stringMapper) {
         return new NeuralGuideApi(this, requestManager, objectMapper, stringMapper);
@@ -31,7 +31,7 @@ public class WebApiModule {
         return new StringToImprovementTipMapping();
     }
 
-    @Provides HttpRequestManager provideHttpRequestManager(@NonNull final WebApiConfig config) {
+    @Provides IHttpRequestManager provideHttpRequestManager(@NonNull final WebApiConfig config) {
         return new HttpRequestManager(config);
     }
 
@@ -41,7 +41,7 @@ public class WebApiModule {
 
     @Provides QueryCaptionEndpointTask provideQueryCaptionEndpoindTask(@NonNull final OnImageCaptionedListener listener,
                                                                        @NonNull final ObjectMapper mapper,
-                                                                       @NonNull final HttpRequestManager requestManager,
+                                                                       @NonNull final IHttpRequestManager requestManager,
                                                                        @NonNull final StringToImprovementTipMapping stringMapping) {
         return new QueryCaptionEndpointTask(listener, mapper, requestManager, stringMapping);
     }
