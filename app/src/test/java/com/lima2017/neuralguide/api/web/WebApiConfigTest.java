@@ -9,7 +9,7 @@ public class WebApiConfigTest {
     public void on_creation_with_null_values_gives_defaults () throws Exception {
         WebApiConfig instance = new WebApiConfig();
 
-        assertEquals("ec2-54-215-196-11.us-west-1.compute.amazonaws.com:8000", instance.getBaseUrl());
+        assertEquals("www.neural-guide.me", instance.getBaseUrl());
         assertEquals("1", instance.getVersion());
         assertEquals(500000, instance.getTimeout());
     }
@@ -27,7 +27,7 @@ public class WebApiConfigTest {
     public void test_if_construction_of_URL_works () throws Exception {
         WebApiConfig instance = new WebApiConfig();
 
-        assertEquals("http://ec2-54-215-196-11.us-west-1.compute.amazonaws.com:8000/v1/caption", instance.getUrl());
+        assertEquals("https://www.neural-guide.me/v1/caption", instance.getUrl());
     }
 
     @Test
