@@ -11,13 +11,12 @@ import java8.util.Optional;
 import static org.junit.Assert.assertEquals;
 
 public class ImageCaptionResultTest {
-    private final int STATUS_CODE_100 = 100;
+    private final String CAPTION = "A picture of a something";
 
     @Test
     public void create_with_only_given_status_code_instructor () {
-        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100);
+        ImageCaptionResult instance = new ImageCaptionResult(null, new HashSet<>());
 
-        assertEquals(STATUS_CODE_100, instance.getStatusCode());
         assertEquals(Optional.empty(), instance.getCaption());
         assertEquals(false, instance.success());
         assertEquals(null, instance.getImprovementTips());
@@ -25,30 +24,22 @@ public class ImageCaptionResultTest {
 
     @Test
     public void create_with_caption_without_improvement_tips () {
-        NeuralGuideResultData data = new NeuralGuideResultData();
-        data.setClassificationSuccess(true);
-        data.setText("a dog");
+        ImageCaptionResult result = new ImageCaptionResult(CAPTION, new HashSet<>());
 
-        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100, data, new HashSet<>());
-
-        assertEquals(STATUS_CODE_100, instance.getStatusCode());
-        assertEquals(Optional.of("a dog"), instance.getCaption());
-        assertEquals(true, instance.success());
-        assertEquals(true, instance.getImprovementTips().isEmpty());
+        assertEquals(Optional.of(CAPTION), result.getCaption());
+        assertEquals(true, result.success());
+        assertEquals(true, result.getImprovementTips().isEmpty());
     }
 
     @Test
     public void on_creation_without_caption_with_improvement_tips () {
-        NeuralGuideResultData data = new NeuralGuideResultData();
-        data.setClassificationSuccess(false);
 
         HashSet<ImprovementTip> tips = new HashSet<>();
         tips.add(ImprovementTip.TooBlurry);
         tips.add(ImprovementTip.TooDark);
 
-        ImageCaptionResult instance = new ImageCaptionResult(STATUS_CODE_100, data, tips);
+        ImageCaptionResult instance = new ImageCaptionResult(null, tips);
 
-        assertEquals(STATUS_CODE_100, instance.getStatusCode());
         assertEquals(Optional.empty(), instance.getCaption());
         assertEquals(false, instance.success());
         assertEquals(false, instance.getImprovementTips().isEmpty());

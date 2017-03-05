@@ -58,8 +58,7 @@ public class NeuralGuideActivity extends AppCompatActivity implements GoogleApiC
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_neural_guide);
-
-        mFragment =  (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
+        mFragment = (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
     }
 
     /**

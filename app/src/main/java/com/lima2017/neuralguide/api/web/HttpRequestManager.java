@@ -18,7 +18,7 @@ import javax.inject.Inject;
 /**
  * Manages the creation of the http post request using the apache library.
  */
-public class HttpRequestManager {
+public class HttpRequestManager implements IHttpRequestManager {
     private final WebApiConfig _config;
     private final HttpPost _httpPost;
 
@@ -26,6 +26,7 @@ public class HttpRequestManager {
     public HttpRequestManager(@NonNull final WebApiConfig config) {
         _config = config;
         _httpPost = new HttpPost(_config.getUrl());
+        _httpPost.setHeader("Content-Type", "application/json");
     }
 
     /**
@@ -34,6 +35,7 @@ public class HttpRequestManager {
      * @return returns an Api config holding status and payload if returned
      * @throws IOException
      */
+    @Override
     public ApiResponse sendHttpPostRequest(String data) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
 
@@ -52,6 +54,8 @@ public class HttpRequestManager {
         if (status >= 200 && status < 300) {
             HttpEntity httpEntity = httpResponse.getEntity();
             String payload = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
+            Log.d("Server Response", payload);
+
             return new ApiResponse(status, payload);
         }
         else {
@@ -61,13 +65,14 @@ public class HttpRequestManager {
     }
 
     /** @return The timeout for the connection in milliseconds. */
+    @Override
     public long getTimeout() {
         return _config.getTimeout();
     }
 
     private static final String LOG_TAG = "Http Request Manager";
 
-    void abort() {
+    public void abort() {
         _httpPost.abort();
     }
 }

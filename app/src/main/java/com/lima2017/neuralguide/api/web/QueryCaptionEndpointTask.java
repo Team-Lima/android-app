@@ -5,11 +5,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lima2017.neuralguide.api.ImageCaptionResult;
 import com.lima2017.neuralguide.api.ImprovementTip;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
-import com.lima2017.neuralguide.api.ImageCaptionResult;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,13 +29,13 @@ import java8.util.Optional;
 public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optional<ImageCaptionResult>> {
     private final OnImageCaptionedListener _listener;
     private final ObjectMapper _objectMapper;
-    private final HttpRequestManager _httpRequest;
+    private final IHttpRequestManager _httpRequest;
     private final StringToImprovementTipMapping _stringMapping;
 
     @Inject
     public QueryCaptionEndpointTask(@NonNull final OnImageCaptionedListener listener,
                                     @NonNull final ObjectMapper mapper,
-                                    @NonNull final HttpRequestManager requestManager,
+                                    @NonNull final IHttpRequestManager requestManager,
                                     @NonNull final StringToImprovementTipMapping stringMapping) {
         _listener = listener;
         _objectMapper = mapper;
@@ -79,19 +80,19 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
 
     /**
      * Unpacks Json to turn it into correct form for UI layer
-     * @param payload The Json string return from HttpRequest
+     * @param response The Json string return from HttpRequest
      * @return ImageCaptureResult to be consumed by the image layer
      * @throws IOException If Json is incorrectly formatted
      */
-    private ImageCaptionResult generateImageCaptureResultFromPayload(ApiResponse payload) throws IOException{
-        if (payload.getStatusCode() >= 200 && payload.getStatusCode() < 300) {
+    private ImageCaptionResult generateImageCaptureResultFromPayload(ApiResponse response) throws IOException{
+        if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
             /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
-            NeuralGuideResult decodedResult = _objectMapper.readValue(payload.getResponse(), NeuralGuideResult.class);
+            NeuralGuideResult decodedResult = _objectMapper.readValue(response.getResponse(), NeuralGuideResult.class);
             Set<ImprovementTip> tips = _stringMapping.createImprovementTipsSet(decodedResult.getData().getImprovementTips());
-            return new ImageCaptionResult(payload.getStatusCode(), decodedResult.getData(), tips);
+            return new ImageCaptionResult(decodedResult.getData().getText(), tips);
         }
         else {
-            return new ImageCaptionResult(payload.getStatusCode());
+            return new ImageCaptionResult(null, new HashSet<>());
         }
     }
 
