@@ -1,5 +1,6 @@
-package com.lima2017.neuralguide.api;
+package com.lima2017.neuralguide.api.web;
 
+import com.lima2017.neuralguide.api.ImprovementTip;
 import com.lima2017.neuralguide.api.web.StringToImprovementTipMapping;
 
 import org.junit.Test;
