@@ -21,4 +21,11 @@ public interface INeuralGuideApi {
      *                  is completed.
      */
     void tryCaptionImage(@NonNull final byte[] imageData, @NonNull final OnImageCaptionedListener callback);
+
+    /**
+     * Attempts to authenticate the Google Account with the backend server.
+     * @param token The ID token to be used in authenticating with the Google Account.
+     * @param callback The callback for when the authentication attempt is concluded.
+     */
+    void authenticate(@NonNull final String token, @NonNull final OnApiAuthenticatedListener callback);
 }

@@ -42,34 +42,34 @@ import java8.util.Optional;
  */
 public class NeuralGuideFragment extends Fragment {
     /** The View through which what the Camera sees is displayed to the user. */
-    private CameraView mCameraView;
+    @Nullable private CameraView mCameraView;
 
     /** TextView holding the result of captioning. */
-    private TextView mCaptionTextView;
+    @Nullable private TextView mCaptionTextView;
 
     /** TextView holding tips and secondary messages to the user. */
-    private TextView mTipsTextView;
+    @Nullable private TextView mTipsTextView;
 
     /** ImageView showing an icon reflecting the success or error state of the app to the user. */
-    private ImageView mIconImageView;
+    @Nullable private ImageView mIconImageView;
 
     /** RelativeLayout holding the result, icon and improvements of captioning. */
-    private RelativeLayout mCaptionPanel;
+    @Nullable private RelativeLayout mCaptionPanel;
 
     /** The Activity holding this fragment must be the NeuralGuideActivity. */
-    private NeuralGuideActivity mNeuralGuideActivity;
+    @Nullable private NeuralGuideActivity mNeuralGuideActivity;
 
     /** An instance of the Android TextToSpeech service. */
-    private TextToSpeech mTextToSpeech;
+    @Nullable private TextToSpeech mTextToSpeech;
 
     /** ProgressBar shown to the user whilst captioning is in progress. */
-    private ProgressBar mProgressSpinner;
+    @Nullable private ProgressBar mProgressSpinner;
 
     /** Android's Vibrator service for providing haptic feedback to users. */
-    private Vibrator mVibrator;
+    @Nullable private Vibrator mVibrator;
 
     /** A mapping between improvement tips and their text representation to the user */
-    private final ImprovementToTextMapping mTextMapping;
+    @Nullable private final ImprovementToTextMapping mTextMapping;
 
     public NeuralGuideFragment() {
         mTextMapping = new ImprovementToTextMapping();
@@ -137,6 +137,14 @@ public class NeuralGuideFragment extends Fragment {
         super.onPause();
     }
 
+    /**
+     * Called after the UI becomes available to the user - that is, after all authentication
+     * attempts are completed.
+     */
+    public void start() {
+        showCaptionPane();
+    }
+
     private void setUpCaptionPane(@NonNull final View root) {
         mCaptionPanel = (RelativeLayout) root.findViewById(R.id.fragment_neural_guide_feedback_panel);
         mCaptionTextView = (TextView) root.findViewById(R.id.fragment_neural_guide_feedback_text);
@@ -146,7 +154,6 @@ public class NeuralGuideFragment extends Fragment {
         mCaptionPanel.setOnClickListener(view -> speakCaptionPanelContents());
 
         mIconImageView.setImageResource(R.drawable.ic_info);
-        showCaptionPane();
     }
 
     private void speakCaptionPanelContents() {
@@ -166,7 +173,7 @@ public class NeuralGuideFragment extends Fragment {
      * @param text The text to be read out.
      */
     @SuppressWarnings("deprecation")
-    private void speak(@NonNull final CharSequence text) {
+    public void speak(@NonNull final CharSequence text) {
         if (mTextToSpeech == null) {
             createTextToSpeechUnavailableDialog(null).show();
             Log.e(LOG_TAG, "Called 'speak' but no text to speech instance exists.");
@@ -278,9 +285,7 @@ public class NeuralGuideFragment extends Fragment {
         }
     }
 
-    /**
-     * Requests permission to use the Camera from the user, never displaying the rationale.
-     */
+    /** Requests permission to use the Camera from the user, never displaying the rationale. */
     private void requestCameraPermissionNoRationale() {
         ActivityCompat.requestPermissions(getActivity(),
                 new String[]{Manifest.permission.CAMERA},

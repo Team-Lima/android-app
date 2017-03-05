@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-    apply plugin: 'com.google.gms.google-services'
 
     useLibrary 'org.apache.http.legacy'
 
@@ -53,6 +52,8 @@ dependencies {
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
 
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
@@ -74,3 +75,5 @@ dependencies {
         exclude group: 'com.fasterxml.jackson.core'
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

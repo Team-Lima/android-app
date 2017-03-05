@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lima2017.neuralguide.api.INeuralGuideApi;
+import com.lima2017.neuralguide.api.OnApiAuthenticatedListener;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 
 import dagger.Module;
@@ -22,9 +23,10 @@ public class WebApiModule {
     }
 
     @Provides INeuralGuideApi provideApi(@NonNull final IHttpRequestManager requestManager,
-                                        @NonNull final ObjectMapper objectMapper,
-                                        @NonNull final StringToImprovementTipMapping stringMapper) {
-        return new NeuralGuideApi(this, requestManager, objectMapper, stringMapper);
+                                         @NonNull final ObjectMapper objectMapper,
+                                         @NonNull final StringToImprovementTipMapping stringMapper,
+                                         @NonNull final WebApiConfig config) {
+        return new NeuralGuideApi(this, requestManager, objectMapper, stringMapper, config);
     }
 
     @Provides StringToImprovementTipMapping provideStringToImprovementTipMapping() {
@@ -44,5 +46,10 @@ public class WebApiModule {
                                                                        @NonNull final IHttpRequestManager requestManager,
                                                                        @NonNull final StringToImprovementTipMapping stringMapping) {
         return new QueryCaptionEndpointTask(listener, mapper, requestManager, stringMapping);
+    }
+
+    @Provides AuthenticateGoogleAccountTask provideAuthenticationTask(@NonNull final OnApiAuthenticatedListener listener,
+                                                                      @NonNull final WebApiConfig config) {
+        return new AuthenticateGoogleAccountTask(listener, config);
     }
 }

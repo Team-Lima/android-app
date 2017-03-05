@@ -24,7 +24,7 @@ public class WebApiConfig {
      * latest available version and the default base URL.
      */
     public WebApiConfig() {
-        this("1", "ec2-54-215-196-11.us-west-1.compute.amazonaws.com:8000");
+        this("1", "www.neural-guide.me");
     }
 
     /**
@@ -55,7 +55,7 @@ public class WebApiConfig {
      * @return The full URL of the Web API to query.
      */
     public String getUrl() {
-        return "http://" + _baseUrl + "/v" + _version + "/caption";
+        return PROTOCOL_PREFIX + _baseUrl + "/v" + _version + "/caption";
     }
 
     /**
@@ -72,4 +72,10 @@ public class WebApiConfig {
     public long getTimeout() {
         return mTimeout;
     }
+
+    public String getAuthUrl() {
+        return PROTOCOL_PREFIX + _baseUrl + "/v" + _version + "/signin";
+    }
+
+    private static final String PROTOCOL_PREFIX = "https://";
 }
