@@ -130,6 +130,7 @@ public class NeuralGuideActivity extends AppCompatActivity
         else {
             final GoogleSignInAccount account = result.getSignInAccount();
             final String tokenId = account != null ? account.getIdToken() : null;
+            Log.e("HALP", tokenId);
 
             if (tokenId != null) {
                 mSigningInDialog = new ProgressDialog(this);

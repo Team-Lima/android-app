@@ -143,6 +143,7 @@ public class NeuralGuideFragment extends Fragment {
      */
     public void start() {
         showCaptionPane();
+        speakCaptionPanelContents();
     }
 
     private void setUpCaptionPane(@NonNull final View root) {
@@ -257,9 +258,7 @@ public class NeuralGuideFragment extends Fragment {
                 createTextToSpeechUnavailableDialog(null).show();
                 Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
             }
-            else {
-                speakCaptionPanelContents();
-            }
+            speakCaptionPanelContents();
         });
     }
 
