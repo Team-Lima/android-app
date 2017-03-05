@@ -24,7 +24,7 @@ public class WebApiConfig {
      * latest available version and the default base URL.
      */
     public WebApiConfig() {
-        this("1", "ec2-54-219-151-174.us-west-1.compute.amazonaws.com:8000");
+        this("1", "ec2-54-215-196-11.us-west-1.compute.amazonaws.com:8000");
     }
 
     /**
