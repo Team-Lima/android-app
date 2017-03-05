@@ -3,8 +3,6 @@ package com.lima2017.neuralguide.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.lima2017.neuralguide.api.web.NeuralGuideResultData;
-
 import java.util.HashSet;
 import java.util.Set;
 
