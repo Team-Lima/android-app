@@ -3,6 +3,7 @@ package com.lima2017.neuralguide;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -28,6 +29,14 @@ import com.google.android.cameraview.CameraView.Callback;
 import com.lima2017.neuralguide.api.ImageCaptionResult;
 import com.lima2017.neuralguide.api.ImprovementTip;
 
+import java.io.File;
+import java.io.IOException;
+
+import edu.cmu.pocketsphinx.Assets;
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
+import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 import java8.util.Optional;
 
 /**
@@ -40,7 +49,7 @@ import java8.util.Optional;
  *
  * @see NeuralGuideActivity
  */
-public class NeuralGuideFragment extends Fragment {
+public class NeuralGuideFragment extends Fragment implements RecognitionListener{
     /** The View through which what the Camera sees is displayed to the user. */
     @Nullable private CameraView mCameraView;
 
@@ -70,6 +79,7 @@ public class NeuralGuideFragment extends Fragment {
 
     /** A mapping between improvement tips and their text representation to the user */
     @Nullable private final ImprovementToTextMapping mTextMapping;
+    private SpeechRecognizer mRecogniser;
 
     public NeuralGuideFragment() {
         mTextMapping = new ImprovementToTextMapping();
@@ -86,6 +96,10 @@ public class NeuralGuideFragment extends Fragment {
 
         mNeuralGuideActivity = (NeuralGuideActivity) getActivity();
         initialiseTextToSpeech();
+
+        if (hasAudioPermission()) {
+            runRecognizerSetup();
+        }
     }
 
     @Override
@@ -116,6 +130,10 @@ public class NeuralGuideFragment extends Fragment {
 
         if (!hasVibratePermission()) {
             requestVibratePermission();
+        }
+
+        if (!hasAudioPermission()) {
+            requestAudioPermission();
         }
     }
 
@@ -319,6 +337,59 @@ public class NeuralGuideFragment extends Fragment {
      * @return <code>true</code> if and only if the user has granted permission for this app to
      * use the camera.
      */
+    private boolean hasAudioPermission() {
+        return PackageManager.PERMISSION_GRANTED ==
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO);
+    }
+
+    /**
+     * Requests permission to use the Camera from the user, displaying a rationale if the user
+     * has declined permission in the past.
+     */
+    private void requestAudioPermission() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {
+            createAudioPermissionsRationaleDialog(this::requestAudioPermissionNoRationale).show();
+        }
+        else {
+            requestAudioPermissionNoRationale();
+        }
+    }
+
+    /** Requests permission to use the Camera from the user, never displaying the rationale. */
+    private void requestAudioPermissionNoRationale() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                PERMISSION_CODE_REQUEST_AUDIO);
+
+    }
+
+    /**
+     * Creates a dialog which displays the rationale for requiring the camera to the user.
+     * @param onDismiss A callback to be invoked when the dialog is dismissed.
+     * @return A dialog that, when shown, displays to the user a message indicating that
+     * why the camera permission is required. Note that the dialog is not shown, and so
+     * AlertDialog.show() must be called explicitly.
+     */
+    public AlertDialog createAudioPermissionsRationaleDialog(@Nullable Runnable onDismiss) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.audio_permission_rationale)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(dialog -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .create();
+    }
+
+    /**
+     * @return <code>true</code> if and only if the user has granted permission for this app to
+     * use the camera.
+     */
     private boolean hasVibratePermission() {
         return PackageManager.PERMISSION_GRANTED ==
                 ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.VIBRATE);
@@ -480,6 +551,12 @@ public class NeuralGuideFragment extends Fragment {
             case PERMISSION_CODE_REQUEST_VIBRATE: {
                 // This isn't too essential. Let's not worry about it.
             }
+
+            case PERMISSION_CODE_REQUEST_AUDIO: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    runRecognizerSetup();
+                }
+            }
         }
     }
 
@@ -501,6 +578,38 @@ public class NeuralGuideFragment extends Fragment {
         mProgressSpinner.setVisibility(View.GONE);
     }
 
+    private void runRecognizerSetup() {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    final File assetsDir = new Assets(getActivity()).syncAssets();
+
+                    mRecogniser = SpeechRecognizerSetup.defaultSetup()
+                            .setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                            .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                            .getRecognizer();
+
+                    mRecogniser.addListener(NeuralGuideFragment.this);
+                    mRecogniser.addKeyphraseSearch(WHAT_IS_THIS_SEARCH, getString(R.string.what_is_this));
+
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Failed to open assets directory why setting up recogniser");
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if (mRecogniser != null) {
+                    mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                }
+            }
+        }.execute();
+    }
+
     /**
      * Callback called by the CameraView whenever a picture is taken.
      */
@@ -519,6 +628,54 @@ public class NeuralGuideFragment extends Fragment {
         }
     };
 
+    @Override
+    public void onEndOfSpeech() {
+        Log.e(LOG_TAG, "End of speech");
+    }
+
+    @Override
+    public void onError(Exception e) {
+        Log.e(LOG_TAG, "Exception in RecognitionListener: " + e.getMessage());
+    }
+
+    @Override
+    public void onPartialResult(Hypothesis hypothesis) {
+        if (hypothesis == null) {
+            return;
+        }
+
+        if (hypothesis.getHypstr().equals(getString(R.string.what_is_this))) {
+            Log.d(LOG_TAG, "Hotword detected");
+            if (mCameraView.isEnabled()) {
+                mCameraView.takePicture();
+            }
+        }
+
+    }
+
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        if (hypothesis == null) {
+            return;
+        }
+
+        Log.d(LOG_TAG, hypothesis.getHypstr());
+        if (hypothesis.getHypstr().equalsIgnoreCase(getString(R.string.what_is_this))) {
+            Log.d(LOG_TAG, "Hotword detected");
+            if (mCameraView.isEnabled()) {
+                mCameraView.takePicture();
+            }
+        }
+    }
+
+    @Override
+    public void onTimeout() {}
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.d(LOG_TAG, "Beginning of speech");
+    }
+
     /** The error log tag used for this class */
     private static final String LOG_TAG = "NeuralGuideFragment";
 
@@ -531,6 +688,12 @@ public class NeuralGuideFragment extends Fragment {
     /** The code representing this fragment's request to use haptic feedback. */
     private static final int PERMISSION_CODE_REQUEST_VIBRATE = 3;
 
+    /** The code representing this fragment's request to record audio. */
+    private static final int PERMISSION_CODE_REQUEST_AUDIO = 4;
+
     /** Time to vibrate the haptic feedback for. */
     private static final long VIBRATE_TIME_MILLISECONDS = 1000;
+
+    /** Name of the search keyword to be used in the "What is this?" search. */
+    private static final String WHAT_IS_THIS_SEARCH = "what_is_this_prompt";
 }
