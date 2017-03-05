@@ -19,7 +19,7 @@ public class ImageCaptionResultTest {
 
         assertEquals(Optional.empty(), instance.getCaption());
         assertEquals(false, instance.success());
-        assertEquals(null, instance.getImprovementTips());
+        assertEquals(true, instance.getImprovementTips().isEmpty());
     }
 
     @Test
