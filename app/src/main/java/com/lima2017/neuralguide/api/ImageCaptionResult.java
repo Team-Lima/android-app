@@ -56,7 +56,7 @@ public class ImageCaptionResult {
         _statusCode = statusCode;
         _classificationSuccess = false;
         _caption = null;
-        _improvementTips = null;
+        _improvementTips = new HashSet<>();
     }
 
     /**

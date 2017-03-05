@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.lima2017.neuralguide.api.ImprovementTip;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import java8.util.Optional;
 
@@ -39,7 +40,7 @@ public class StringToImprovementTipMapping {
      * @return The set of improvement tips which are mapped to the given string.
      */
     @NonNull
-    public HashSet<ImprovementTip> createImprovementTipsSet(@Nullable final String[] improvementTips) {
+    public Set<ImprovementTip> createImprovementTipsSet(@Nullable final String[] improvementTips) {
         final HashSet<ImprovementTip> set = new HashSet<>();
 
         if (improvementTips != null){
