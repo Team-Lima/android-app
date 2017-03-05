@@ -17,14 +17,14 @@ public class WebApiConfig {
     private final String _baseUrl;
 
     /** The getTimeout after which we give up connecting to the API */
-    private long mTimeout = 5000;
+    private long mTimeout = 500000;
 
     /**
      * Initialises a Web API configuration with the default values. This includes using the
      * latest available version and the default base URL.
      */
     public WebApiConfig() {
-        this("1", "neuralguide.com");
+        this("1", "ec2-54-215-196-11.us-west-1.compute.amazonaws.com:8000");
     }
 
     /**

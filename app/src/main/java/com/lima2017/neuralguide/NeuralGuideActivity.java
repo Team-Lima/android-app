@@ -40,7 +40,7 @@ public class NeuralGuideActivity extends AppCompatActivity {
         setContentView(R.layout.activity_neural_guide);
 
 
-        mFragment =  (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
+        mFragment = (NeuralGuideFragment) getSupportFragmentManager().findFragmentById(R.id.activity_neural_guide_fragment);
     }
 
     /**
