@@ -29,4 +29,14 @@
         Please check that you are connected to the internet.
     </string>
     <string name="vibrate_permission_rationale">Permission to vibrate the device is required to give feedback to blind and deaf users that the picture was taken and is being analysed.</string>
+    <string name="sign_in_failed">Failed to sign in</string>
+    <string name="sign_in_failed_explanation">You might sign in to your Google Account to use this app</string>
+
+    <string name="server_client_id">624718567609-ja0vbu5svh6l5q79pvtnk1rn3pjrrq2d.apps.googleusercontent.com</string>
+    <string name="auth_failed_dialog_title">Failed to authenticate your Google Account</string>
+    <string name="auth_failed_dialog_message">The web service failed to recognise your Google Account</string>
+    <string name="signing_in">Signing In</string>
+    <string name="failed_to_connect_to_google">Failed to connect to your Google Account.</string>
+    <string name="error">Error</string>
+    <string name="authentication_error_explanation">An error occurred verifying your Google Account, please check your internet connection.</string>
 </resources>

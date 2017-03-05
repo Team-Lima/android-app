@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lima2017.neuralguide.api.INeuralGuideApi;
+import com.lima2017.neuralguide.api.OnApiAuthenticatedListener;
 import com.lima2017.neuralguide.api.OnImageCaptionedListener;
 
 /**
@@ -24,6 +25,8 @@ public class NeuralGuideApi implements INeuralGuideApi {
      * Java enums.
      */
     private final StringToImprovementTipMapping _stringMapper;
+    @NonNull
+    private final WebApiConfig _config;
 
     /** The Dagger WebApiModule providing the query caption endpoint tasks. */
     private final WebApiModule _module;
@@ -31,11 +34,13 @@ public class NeuralGuideApi implements INeuralGuideApi {
     public NeuralGuideApi(@NonNull final WebApiModule module,
                           @NonNull final IHttpRequestManager requestManager,
                           @NonNull final ObjectMapper objectMapper,
-                          @NonNull final StringToImprovementTipMapping stringMapper) {
+                          @NonNull final StringToImprovementTipMapping stringMapper,
+                          @NonNull final WebApiConfig config) {
         _module = module;
         _requestManager = requestManager;
         _objectManager = objectMapper;
         _stringMapper = stringMapper;
+        _config = config;
     }
 
     @Override
@@ -43,5 +48,11 @@ public class NeuralGuideApi implements INeuralGuideApi {
                                 @NonNull final OnImageCaptionedListener callback) {
         _module.provideQueryCaptionEndpoindTask(callback, _objectManager, _requestManager, _stringMapper)
                 .execute(imageData);
+    }
+
+    @Override
+    public void authenticate(@NonNull final String idToken,
+                             @NonNull final OnApiAuthenticatedListener callback) {
+        _module.provideAuthenticationTask(callback, _config).execute(idToken);
     }
 }
