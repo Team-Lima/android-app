@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java8.util.Optional;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +48,7 @@ public class HttpRequestManagerTest {
         ApiResponse response = instance.sendHttpPostRequest("{\"data\":\"AAECAwQFBgcICQ==\"}");
 
         assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getResponse()).isEqualTo("\"{\\n\" +\n" +
+        assertThat(response.getResponse().get()).isEqualTo("\"{\\n\" +\n" +
                 "                \"  \\\"success\\\": true,\\n\" +\n" +
                 "                \"  \\\"status\\\": 200,\\n\" +\n" +
                 "                \"  \\\"data\\\": {\\n\" +\n" +
@@ -55,5 +57,19 @@ public class HttpRequestManagerTest {
                 "                \"     \\\"classificationSuccess\\\": false\\n\" +\n" +
                 "                \"  }\\n\" +\n" +
                 "                \"}\\n\"");
+    }
+
+    @Test
+    public void when_given_incorrect_data_returns_result () throws Exception {
+        when(config.getUrl()).thenReturn("http://localhost:" + theWireMockRule.port() + "/v1/caption");
+        HttpRequestManager instance = new HttpRequestManager(config);
+
+        stubFor(post(urlEqualTo("/v1/caption"))
+                .withRequestBody(equalTo("{\"data\": \"Empty\" }"))
+                .willReturn(aResponse().withStatus(404)));
+        ApiResponse response = instance.sendHttpPostRequest("{\"data\": \"Empty\" }");
+
+        assertThat(response.getStatusCode()).isEqualTo(404);
+        assertThat(response.getResponse()).isEqualTo(Optional.empty());
     }
 }

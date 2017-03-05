@@ -1,5 +1,7 @@
 package com.lima2017.neuralguide.api.web;
 
+import java8.util.Optional;
+
 /**
  * DTO to hold the data returned from the Api request before decoding.
  *
@@ -25,7 +27,7 @@ public class ApiResponse {
         return _statusCode;
     }
 
-    public String getResponse() {
-        return _response;
+    public Optional<String> getResponse() {
+        return Optional.ofNullable(_response);
     }
 }

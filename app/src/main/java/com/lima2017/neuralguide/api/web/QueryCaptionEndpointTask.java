@@ -87,7 +87,7 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
     private ImageCaptionResult generateImageCaptureResultFromPayload(ApiResponse response) throws IOException{
         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
             /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
-            NeuralGuideResult decodedResult = _objectMapper.readValue(response.getResponse(), NeuralGuideResult.class);
+            NeuralGuideResult decodedResult = _objectMapper.readValue(response.getResponse().get(), NeuralGuideResult.class);
             Set<ImprovementTip> tips = _stringMapping.createImprovementTipsSet(decodedResult.getData().getImprovementTips());
             return new ImageCaptionResult(decodedResult.getData().getText(), tips);
         }
