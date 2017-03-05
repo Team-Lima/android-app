@@ -52,6 +52,10 @@ dependencies {
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
 
+    // PocketSphinx libraries are in /aars and /models
+    compile project(':aars')
+    compile project(':models')
+
     compile 'com.google.android.gms:play-services-auth:10.2.0'
 
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'

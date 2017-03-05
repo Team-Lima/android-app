@@ -13,6 +13,11 @@
         permission to access the camera otherwise this app cannot work.
     </string>
 
+
+    <string name="audio_permission_rationale">
+        This app needs to be able to record audio to know when you say "What is this?"
+    </string>
+
     <string name="internet_permission_rationale">
         This app uses the internet to tell it what the camera is seeing. It therefore needs the
         internet to work. Please grant it Internet permission in order to work.
@@ -39,4 +44,5 @@
     <string name="failed_to_connect_to_google">Failed to connect to your Google Account.</string>
     <string name="error">Error</string>
     <string name="authentication_error_explanation">An error occurred verifying your Google Account, please check your internet connection.</string>
+    <string name="what_is_this">what is this</string>
 </resources>
