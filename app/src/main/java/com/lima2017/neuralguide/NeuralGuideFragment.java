@@ -214,7 +214,6 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
      * @param result The captioning result which should be reflected in the user interface.
      */
     public void onImageCaptioned(@NonNull final Optional<ImageCaptionResult> result) {
-        mCameraView.setEnabled(true);
         hideProgressSpinner();
 
         if (!result.isPresent()) {
@@ -568,6 +567,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
     }
 
     private void showProgressSpinner() {
+        mCameraView.setEnabled(false);
         mProgressSpinner.setVisibility(View.VISIBLE);
         mCameraView.stop();
     }
@@ -575,6 +575,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
     private void hideProgressSpinner() {
         mCameraView.start();
         mProgressSpinner.setVisibility(View.GONE);
+        mCameraView.setEnabled(true);
     }
 
     private void runRecognizerSetup() {
