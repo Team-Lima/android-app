@@ -89,7 +89,17 @@ public class QueryCaptionEndpointTask extends AsyncTask<byte[], Integer, Optiona
             /// Use Jackson library to unpack Json string to relevant Neural Guide results classes
             NeuralGuideResult decodedResult = _objectMapper.readValue(response.getResponse().get(), NeuralGuideResult.class);
             Set<ImprovementTip> tips = _stringMapping.createImprovementTipsSet(decodedResult.getData().getImprovementTips());
-            return new ImageCaptionResult(decodedResult.getData().getText(), tips);
+
+            final String text;
+
+            if (decodedResult.getData().getClassificationSuccess()) {
+                text= decodedResult.getData().getText();
+            }
+            else {
+                text= null;
+            }
+
+            return new ImageCaptionResult(text, tips);
         }
         else {
             return new ImageCaptionResult(null, new HashSet<>());
