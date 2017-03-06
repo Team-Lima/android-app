@@ -644,8 +644,8 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
         }
 
         if (hypothesis.getHypstr().equals(getString(R.string.what_is_this))) {
-            Log.d(LOG_TAG, "Hotword detected");
-            if (mCameraView.isEnabled()) {
+            Log.d(LOG_TAG, "Hotword detected - partial");
+            if (mCameraView.isCameraOpened()) {
                 mCameraView.takePicture();
             }
         }
@@ -660,8 +660,8 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
 
         Log.d(LOG_TAG, hypothesis.getHypstr());
         if (hypothesis.getHypstr().equalsIgnoreCase(getString(R.string.what_is_this))) {
-            Log.d(LOG_TAG, "Hotword detected");
-            if (mCameraView.isEnabled()) {
+            Log.d(LOG_TAG, "Hotword detected - full");
+            if (mCameraView.isCameraOpened()) {
                 mCameraView.takePicture();
             }
         }
