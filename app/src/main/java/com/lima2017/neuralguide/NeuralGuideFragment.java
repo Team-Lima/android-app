@@ -162,6 +162,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
      */
     public void start() {
         mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+        mCameraView.setEnabled(true);
         showCaptionPane();
         speakCaptionPanelContents();
     }
@@ -187,6 +188,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
         mCameraView = (CameraView) root.findViewById(R.id.fragment_neural_guide_camera_view);
         mCameraView.addCallback(onPictureTaken);
         mCameraView.setOnClickListener(view -> mCameraView.takePicture());
+        mCameraView.setEnabled(false);
     }
 
     /**
