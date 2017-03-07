@@ -161,6 +161,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
      * attempts are completed.
      */
     public void start() {
+        mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
         showCaptionPane();
         speakCaptionPanelContents();
     }
@@ -282,19 +283,25 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
                 mTextToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
                     public void onStart(String utteranceId) {
-                        mRecogniser.stop();
+                        if (mNeuralGuideActivity.signedIn()) {
+                            mRecogniser.stop();
+                        }
                     }
 
                     @Override
                     public void onDone(String utteranceId) {
                         Log.d(LOG_TAG, "Restarting recogniser after TTS finished speaking");
-                        mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                        if (mNeuralGuideActivity.signedIn()) {
+                            mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                        }
                     }
 
                     @Override
                     public void onError(String utteranceId) {
                         Log.d(LOG_TAG, "Restarting recogniser after TTS error");
-                        mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                        if (mNeuralGuideActivity.signedIn()) {
+                            mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                        }
                     }
                 });
             }
@@ -602,35 +609,20 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
     }
 
     private void runRecognizerSetup() {
-        new AsyncTask<Void, Void, Void>() {
+        try {
+            final File assetsDir = new Assets(getActivity()).syncAssets();
 
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    final File assetsDir = new Assets(getActivity()).syncAssets();
+            mRecogniser = SpeechRecognizerSetup.defaultSetup()
+                    .setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                    .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                    .getRecognizer();
 
-                    mRecogniser = SpeechRecognizerSetup.defaultSetup()
-                            .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                            .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-                            .getRecognizer();
+            mRecogniser.addListener(NeuralGuideFragment.this);
+            mRecogniser.addKeyphraseSearch(WHAT_IS_THIS_SEARCH, getString(R.string.what_is_this));
 
-                    mRecogniser.addListener(NeuralGuideFragment.this);
-                    mRecogniser.addKeyphraseSearch(WHAT_IS_THIS_SEARCH, getString(R.string.what_is_this));
-
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Failed to open assets directory why setting up recogniser");
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                if (mRecogniser != null) {
-                    mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
-                }
-            }
-        }.execute();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Failed to open assets directory why setting up recogniser");
+        }
     }
 
     /**

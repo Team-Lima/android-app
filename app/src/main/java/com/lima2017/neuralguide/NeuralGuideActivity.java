@@ -46,6 +46,9 @@ public class NeuralGuideActivity extends AppCompatActivity
     /** Dialog to be shown when the asynchronous sign-in attempt is ongoing. */
     @Nullable private ProgressDialog mSigningInDialog;
 
+    /** True if and only if sign in was successful. */
+    @Nullable private boolean mIsSignedIn = false;
+
     public NeuralGuideActivity() {
         _apiComponent = DaggerNeuralGuideApiComponent.builder()
                 .webApiModule(new WebApiModule())
@@ -151,6 +154,7 @@ public class NeuralGuideActivity extends AppCompatActivity
         }
 
         mFragment.start();
+        mIsSignedIn = true;
     }
 
     @Override
@@ -185,6 +189,10 @@ public class NeuralGuideActivity extends AppCompatActivity
                 .show();
 
         mFragment.speak(getString(R.string.authentication_error_explanation));
+    }
+
+    public boolean signedIn() {
+        return mIsSignedIn;
     }
 
     /** Request code for signing in the user to their Google Account. */
