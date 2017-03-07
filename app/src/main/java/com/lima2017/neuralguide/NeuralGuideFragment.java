@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -200,7 +201,7 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utterance");
         }
         else {
             mTextToSpeech.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null);
@@ -274,6 +275,28 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
             if (status != TextToSpeech.SUCCESS) {
                 createTextToSpeechUnavailableDialog(null).show();
                 Log.e(LOG_TAG, "Failed to initialise TextToSpeech service");
+            }
+            else {
+                Log.d(LOG_TAG, "Initialised TextToSpeech service");
+
+                mTextToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        mRecogniser.stop();
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        Log.d(LOG_TAG, "Restarting recogniser after TTS finished speaking");
+                        mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+                        Log.d(LOG_TAG, "Restarting recogniser after TTS error");
+                        mRecogniser.startListening(WHAT_IS_THIS_SEARCH);
+                    }
+                });
             }
         });
     }
@@ -630,7 +653,12 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
 
     @Override
     public void onEndOfSpeech() {
-        Log.e(LOG_TAG, "End of speech");
+        Log.d(LOG_TAG, "End of speech");
+    }
+
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        Log.d(LOG_TAG, "Speech resulted");
     }
 
     @Override
@@ -648,24 +676,10 @@ public class NeuralGuideFragment extends Fragment implements RecognitionListener
             Log.d(LOG_TAG, "Hotword detected - partial");
             if (mCameraView.isCameraOpened() && mCameraView.isEnabled()) {
                 mCameraView.takePicture();
+                mRecogniser.stop();
             }
         }
 
-    }
-
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-        if (hypothesis == null) {
-            return;
-        }
-
-        Log.d(LOG_TAG, hypothesis.getHypstr());
-        if (hypothesis.getHypstr().equalsIgnoreCase(getString(R.string.what_is_this))) {
-            Log.d(LOG_TAG, "Hotword detected - full");
-            if (mCameraView.isCameraOpened() && mCameraView.isEnabled()) {
-                mCameraView.takePicture();
-            }
-        }
     }
 
     @Override
